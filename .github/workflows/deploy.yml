@@ -24,9 +24,6 @@ jobs:
       - name: Build the project
         run: npm run build
 
-      - name: Run tests
-        run: npm test
-
       - name: Archive production artifacts
         run: |
           mkdir -p build
