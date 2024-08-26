@@ -3,7 +3,7 @@ name: Deploy to Raspberry Pi
 on:
   push:
     branches:
-      - main  # main 브랜치에 푸시할 때마다 실행
+      - main
 
 jobs:
   build:
@@ -46,25 +46,18 @@ jobs:
         with:
           name: build
 
-      - name: Deploy to Raspberry Pi
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}  # GitHub Secrets에 SSH 키 저장
-          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}          # 라즈베리파이 유저 이름
-          SSH_HOST: ${{ secrets.SSH_HOST }}          # 라즈베리파이 IP 주소
-          SSH_PORT: ${{ secrets.SSH_PORT }}          # 기본 포트는 22
-          REMOTE_DIR: ${{ secrets.REMOTE_DIR }}            # 배포할 디렉터리 경로
-
+      - name: Start SSH agent
         run: |
-          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
-          ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
-          scp -P $SSH_PORT -r build/* $SSH_USERNAME@$SSH_HOST:$REMOTE_DIR
-
-      - name: Restart server
+          eval $(ssh-agent -s)
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
 
-        run: |
-          ssh -p $SSH_PORT $SSH_USERNAME@$SSH_HOST 'pm2 restart all'
+      - name: Add SSH host key
+        run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to Raspberry Pi
+        run: scp -P ${{ secrets.SSH_PORT }} -r build/* ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.REMOTE_DIR }}
+
+      - name: Restart server
+        run: ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} 'pm2 restart all'
