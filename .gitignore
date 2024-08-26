@@ -1,0 +1,50 @@
+# Node.js 모듈들
+node_modules/
+
+# 환경 변수 파일
+.env
+.env.local
+.env.*.local
+
+# 로그 파일들
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 디버그 파일들
+debug.log
+
+# IDE 설정 파일들 (VSCode 예시)
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 운영체제별 파일들
+.DS_Store
+Thumbs.db
+
+# 빌드 디렉토리 (Webpack, Babel 등에서 생성되는 경우)
+dist/
+build/
+
+# 캐시 디렉토리
+.cache/
+
+# 임시 파일들
+*.tmp
+*.temp
+*.bak
+*.backup
+*.swp
+*.swm
+
+# 서비스 워커 캐시 파일
+.sw.cache
+
+# Docker 관련
+docker-compose.override.yml
+.docker/
+
+# test 디렉토리
+coverage/
