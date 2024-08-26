@@ -13,6 +13,9 @@ RUN npm install --legacy-peer-deps
 # 소스 코드를 모두 복사합니다.
 COPY . .
 
+# 앱 빌드
+RUN npm run build
+
 # 애플리케이션 포트를 노출합니다.
 EXPOSE 3000
 
