@@ -49,22 +49,22 @@ jobs:
       - name: Deploy to Raspberry Pi
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}  # GitHub Secrets에 SSH 키 저장
-          REMOTE_USER: ${{ secrets.REMOTE_USER }}          # 라즈베리파이 유저 이름
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}          # 라즈베리파이 IP 주소
-          REMOTE_PORT: ${{ secrets.REMOTE_PORT }}          # 기본 포트는 22
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}          # 라즈베리파이 유저 이름
+          SSH_HOST: ${{ secrets.SSH_HOST }}          # 라즈베리파이 IP 주소
+          SSH_PORT: ${{ secrets.SSH_PORT }}          # 기본 포트는 22
           REMOTE_DIR: ${{ secrets.REMOTE_DIR }}            # 배포할 디렉터리 경로
 
         run: |
           echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
-          ssh-keyscan -H $REMOTE_HOST >> ~/.ssh/known_hosts
-          scp -P $REMOTE_PORT -r build/* $REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR
+          ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
+          scp -P $SSH_PORT -r build/* $SSH_USERNAME@$SSH_HOST:$REMOTE_DIR
 
       - name: Restart server
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-          REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
 
         run: |
-          ssh -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST 'pm2 restart all'  # PM2를 사용하는 경우
+          ssh -p $SSH_PORT $SSH_USERNAME@$SSH_HOST 'pm2 restart all'
