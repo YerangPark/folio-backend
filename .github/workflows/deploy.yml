@@ -60,8 +60,8 @@ jobs:
           echo "${{ secrets.DOCKERHUB_ACCESS_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/folio-backend:latest
 
-          docker stop folio-backend || true
-          docker rm folio-backend || true
+          docker stop backend-container || true
+          docker rm backend-container || true
 
-          pm2 delete folio-backend || true
+          pm2 delete backend-container || true
           pm2 start docker --name backend-container -- run -d --name backend-container -p 8080:3000 ${{ secrets.DOCKERHUB_USERNAME }}/folio-backend:latest
