@@ -3,7 +3,8 @@ import express, { Request, Response } from 'express';
 import { getConnection } from './config/db';
 
 const app = express();
-const PORT: number = parseInt(process.env.PORT, 10) || 3000;
+const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+
 //ANCHOR - http://localhost:3000/경로 라우팅
 app.get('/', async (req: Request, res: Response) => {
   try {
