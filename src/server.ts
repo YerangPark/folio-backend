@@ -3,8 +3,7 @@ import express, { Request, Response } from 'express';
 import { getConnection } from './config/db';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-
+const PORT: number = parseInt(process.env.PORT, 10) || 3000;
 //ANCHOR - http://localhost:3000/경로 라우팅
 app.get('/', async (req: Request, res: Response) => {
   try {
@@ -23,12 +22,12 @@ app.get('/', async (req: Request, res: Response) => {
 });
 
 //ANCHOR - 테스트용
-app.get('/ping', (req, res) => {
+app.get('/ping', (req: Request, res: Response) => {
   console.log('Ping received');
   res.send('pong');  // 응답을 반환
 });
 
 // 서버 실행
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
