@@ -21,6 +21,13 @@ jobs:
     - name: Install dependencies
       run: npm install
 
+    - name: Build project
+      run: npm run build
+
+    # Docker Buildx 설정: 멀티 플랫폼 빌드를 위해서 사용.
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
     - name: Log in to DockerHub
       uses: docker/login-action@v2
       with:
