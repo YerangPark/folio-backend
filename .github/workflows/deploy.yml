@@ -64,4 +64,4 @@ jobs:
           docker rm folio-backend || true
 
           pm2 delete folio-backend || true
-          pm2 start docker --name folio-backend -- run -d --name folio-backend -p 8080:3000 ${{ secrets.DOCKERHUB_USERNAME }}/folio-backend:latest
+          pm2 start docker --name backend-container -- run -d --name backend-container -p 8080:3000 ${{ secrets.DOCKERHUB_USERNAME }}/folio-backend:latest
