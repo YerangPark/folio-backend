@@ -63,5 +63,9 @@ jobs:
           docker stop backend-container || true
           docker rm backend-container || true
 
-          pm2 delete backend-container || true
-          pm2 start docker --name backend-container -- run -d --name backend-container -p 8080:3000 ${{ secrets.DOCKERHUB_USERNAME }}/folio-backend:latest
+          docker run -d --name backend-container \
+            -e DB_HOST=${{ secrets.DB_HOST }} \
+            -e DB_USER=${{ secrets.DB_USER }} \
+            -e DB_PASS=${{ secrets.DB_PASS }} \
+            -e DB_NAME=${{ secrets.DB_NAME }} \
+            -p 8080:3000 yerang2/folio-backend:latest
