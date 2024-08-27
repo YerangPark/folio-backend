@@ -5,7 +5,7 @@ import { getConnection } from './config/db';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// http://localhost:3000/경로 라우팅
+//ANCHOR - http://localhost:3000/경로 라우팅
 app.get('/', async (req: Request, res: Response) => {
   try {
     console.log('Attempting to connect to the database');
@@ -20,6 +20,12 @@ app.get('/', async (req: Request, res: Response) => {
     console.log("Error during databases connection or query:", err)
     res.status(500).send('Database connnection failed');
   }
+});
+
+//ANCHOR - 테스트용
+app.get('/ping', (req, res) => {
+  console.log('Ping received');
+  res.send('pong');  // 응답을 반환
 });
 
 // 서버 실행
