@@ -24,8 +24,8 @@ jobs:
     - name: Log in to DockerHub
       uses: docker/login-action@v2
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
 
     - name: Build and Push Docker image
       uses: docker/build-push-action@v3
@@ -51,8 +51,8 @@ jobs:
           echo "SSH 연결 테스트 완료."
           docker --version
           echo "${{ secrets.DOCKERHUB_ACCESS_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-          docker pull ${{ secrets.DOCKER_USERNAME }}/folio-backend:latest
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/folio-backend:latest
           docker stop folio-backend || true
           docker rm folio-backend || true
-          docker run -d --name folio-backend -p 8080:3000 ${{ secrets.DOCKER_USERNAME }}/folio-backend:latest
+          docker run -d --name folio-backend -p 8080:3000 ${{ secrets.DOCKERHUB_USERNAME }}/folio-backend:latest
           pm2 restart all || pm2 start folio-backend:latest
