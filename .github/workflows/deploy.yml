@@ -1,4 +1,4 @@
-name: Deploy to Raspberry Pi
+name: CI/CD Pipeline with Docker
 
 on:
   push:
@@ -11,18 +11,15 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version: '16'
+        node-version: '20'
 
     - name: Install dependencies
       run: npm install
-
-    - name: Build the Docker image
-      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/folio-backend .
 
     - name: Log in to DockerHub
       uses: docker/login-action@v2
@@ -30,25 +27,32 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
 
-    - name: Push the Docker image
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/folio-backend
+    - name: Build and Push Docker image
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/folio-backend:latest
+        platforms: linux/amd64,linux/arm64
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
 
     steps:
-    - name: Deploy to Raspberry Pi via SSH
-      uses: appleboy/ssh-action@v0.1.5
+    - name: SSH to Deploy Server
+      uses: appleboy/ssh-action@v0.1.7
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        # passphrase: ${{ secrets.SSH_PASSWORD }}
         port: ${{ secrets.SSH_PORT }}
         script: |
-          docker pull ${{ secrets.DOCKER_USERNAME }}/folio-backend
+          echo "SSH 연결 테스트 완료."
+          docker --version
+          echo "${{ secrets.DOCKERHUB_ACCESS_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+          docker pull ${{ secrets.DOCKER_USERNAME }}/folio-backend:latest
           docker stop folio-backend || true
           docker rm folio-backend || true
-          docker run -d --name folio-backend -p 80:3000 ${{ secrets.DOCKER_USERNAME }}/folio-backend
-          pm2 restart all || pm2 start folio-backend
+          docker run -d --name folio-backend -p 8080:3000 ${{ secrets.DOCKER_USERNAME }}/folio-backend:latest
+          pm2 restart all || pm2 start folio-backend:latest
