@@ -62,4 +62,3 @@ jobs:
           docker stop folio-backend || true
           docker rm folio-backend || true
           docker run -d --name folio-backend -p 8080:3000 ${{ secrets.DOCKERHUB_USERNAME }}/folio-backend:latest
-          pm2 restart all || pm2 start folio-backend:latest
