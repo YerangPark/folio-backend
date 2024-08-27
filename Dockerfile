@@ -10,6 +10,9 @@ COPY package.json package-lock.json ./
 # 의존성을 설치
 RUN npm install --legacy-peer-deps
 
+# PM2를 글로벌로 설치합니다.
+RUN npm install -g pm2
+
 # 소스 코드를 모두 복사
 COPY . .
 
