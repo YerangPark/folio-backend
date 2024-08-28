@@ -10,10 +10,6 @@ const pool: Pool = mariadb.createPool({
 });
 
 export async function getConnection(): Promise<PoolConnection> {
-  console.log('  연결 정보 출력');
-  console.log('   HOST : ' + process.env.DB_HOST);
-  console.log('   DB_USER : ' + process.env.DB_USER);
-  console.log('   DB_NAME : ' + process.env.DB_NAME);
   let connection: PoolConnection;
   try {
     connection = await pool.getConnection(); // 새로운 데이터베이스 연결을 생성하는 함수 호출
