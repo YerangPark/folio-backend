@@ -4,6 +4,9 @@ FROM node:20-alpine
 # 앱 디렉토리를 생성하고, 작업 디렉토리로 설정합니다.
 WORKDIR /
 
+# DB 관련 패키지 설치
+RUN apk update && apk add --no-cache mysql-client
+
 # package.json 및 package-lock.json을 복사합니다.
 COPY package.json package-lock.json ./
 
