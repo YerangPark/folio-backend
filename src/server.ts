@@ -1,28 +1,58 @@
 require('dotenv').config();
-import express, { Request, Response } from 'express';
+require('express-async-errors'); //NOTE - 비동기 에러 핸들링
+import express, { NextFunction, Request, Response } from 'express';
 import { getConnection } from './config/db';
+import userRoutes from './routes/userRoutes';
+import ErrorHandler from './middlewares/errorHandler';
+import AppDataSource from '../ormconfig';
 
 const app = express();
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
-//ANCHOR - http://localhost:3000/경로 라우팅
-app.get('/', async (req: Request, res: Response) => {
-  try {
-    console.log('Attempting to connect to the database');
-    const conn = await getConnection();
-    console.log('Database connection successful');
+app.use(express.json());
+app.use(userRoutes);
+app.use(ErrorHandler);
 
-    const rows = await conn.query("SELECT 1 as val");
-    console.log('Query result:', rows);
-    conn.release();
-    res.send('Databases connection successful');
-  } catch (err) {
-    console.log("Error during databases connection or query:", err)
-    res.status(500).send('Database connnection failed');
-  }
+//SECTION - http://localhost:3000/경로 라우팅
+AppDataSource.initialize()
+  .then(() => {
+    console.log('Database initialized');
+    app.listen(PORT, () => {
+      console.log(`Server is running on http://localhost:${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Error during Data Source initialization:', error);
+  });
+
+// app.get('/', async (req: Request, res: Response, next: NextFunction) => {
+//   try {
+//     console.log('Attempting to connect to the database');
+//     const conn = await getConnection();
+//     console.log('Database connection successful');
+
+//     const rows = await conn.query("SELECT 1 as val");
+//     console.log('Query result:', rows);
+//     conn.release();
+//     res.send('Databases connection successful');
+//   } catch (err) {
+//     console.log("Error during databases connection or query:", err)
+//     res.status(500).send('Database connnection failed');
+//   }
+// });
+
+// SECTION - 에러 처리 미들웨어
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack); //ANCHOR - 에러 스택 추적 로그를 출력
+  res.status(500).json({
+      message: err.message,
+      // 개발 환경에서는 스택 정보를 함께 전송
+      ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+  });
 });
 
-//ANCHOR - 테스트용
+
+//SECTION - 테스트용
 app.get('/ping', (req: Request, res: Response) => {
   console.log('Ping received');
   res.send('pong');  // 응답을 반환

@@ -9,6 +9,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      db:
+        image: mariadb:latest
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASS }}
+          MYSQL_DATABASE: ${{ secrets.DB_NAME }}
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -27,6 +41,17 @@ jobs:
     # Docker Buildx 설정: 멀티 플랫폼 빌드를 위해서 사용.
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
+
+    - name: Start Database Service
+      run: |
+        docker-compose up -d db
+        until docker exec db mysqladmin ping --silent; do
+          echo "Waiting for database connection..."
+          sleep 5
+        done
+
+    - name: Run TypeORM migrations
+      run: docker-compose run app npm run typeorm migration:run
 
     - name: Log in to DockerHub
       uses: docker/login-action@v2

@@ -19,6 +19,9 @@ COPY . .
 # 앱 빌드
 RUN npm run build
 
+# TypeORM 마이그레이션을 실행
+RUN npm run typeorm migration:run
+
 # 애플리케이션 포트를 노출합니다.
 EXPOSE 3000
 

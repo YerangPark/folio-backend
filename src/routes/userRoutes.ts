@@ -1,5 +1,5 @@
 import express, { Router, Request, Response, NextFunction } from 'express';
-import UserModel from '../models/userModels';
+import UserModel from '../models/userModel';
 import { sendMail } from '../utils/mailer';
 import { generateRandomPassword } from '../utils/passwordGenerator';
 import { USER_CONST } from '../constants/userConst';
@@ -52,7 +52,7 @@ interface SignoutRequestBody {
 //SECTION - 유효성 검사 함수
 function validateSignupData(data: SignupRequestBody): boolean {
   if (!data || !data.username || !data.password || !data.name || !data.birthdate || !data.email) {
-    return false;
+    throw new CustomError(HTTP_STATUS.BAD_REQUEST, 'MISSING_FIELDS', ERROR_MESSAGES.MISSING_FIELDS);
   }
   const { username, password, name, birthdate, email } = data;
 
@@ -93,9 +93,7 @@ function validateEditData(data: EditRequestBody): boolean {
 //ANCHOR - 회원가입
 router.post('/api/user/sign', async (req: Request, res: Response, next: NextFunction) => {
   if (!validateSignupData(req.body)) {
-    throw new CustomError(HTTP_STATUS.BAD_REQUEST, 'MISSING_FIELDS', ERROR_MESSAGES.MISSING_FIELDS);
-    // FIXME - 전부 미싱필드 날리면 안됨.
-    // NOTE - express-validator라는 것도 있따.
+    throw new CustomError(HTTP_STATUS.BAD_REQUEST, 'VALIDATION_FAILED', ERROR_MESSAGES.VALIDATION_FAILED);
   }
   const { name, birthdate, username, password, email } = req.body as SignupRequestBody;
 
@@ -109,7 +107,7 @@ router.post('/api/user/sign', async (req: Request, res: Response, next: NextFunc
       throw new CustomError(HTTP_STATUS.CONFLICT, 'EMAIL_TAKEN', ERROR_MESSAGES.EMAIL_TAKEN);
     }
 
-    const result = await UserModel.create({ name, birthdate, username, password, email });
+    const result = await UserModel.createUser({ name, birthdate, username, password, email });
     res.status(HTTP_STATUS.CREATED).json(generateSuccessResponse({ id: result }));
   } catch (error: any) {
     next(error);
@@ -239,62 +237,56 @@ router.delete('/api/user/sign', async (req: Request, res: Response, next: NextFu
   }
 
   try {
-    const result = await UserModel.deleteUser(username);
+    await UserModel.deleteUser(username);
     res.status(HTTP_STATUS.OK).json(generateSuccessResponse());
   } catch (error: any) {
     next(error);
-    console.error('로그인 실패: ', error);
-    res.status(500).send(error.message);
   }
 })
 
 //ANCHOR - ID 중복 검사 라우트
 router.get('/api/user/check-username', async (req: Request, res: Response, next: NextFunction) => {
   if (!req.body.username) {
-    return res.status(400).json({ message: 'Invalid argument' });
+    throw new CustomError(HTTP_STATUS.BAD_REQUEST, 'MISSING_FIELDS', ERROR_MESSAGES.MISSING_FIELDS);
   }
-  const { username } = req.query;
+  const username = req.body.username;
   if (typeof username !== 'string') {
-    return res.status(400).json({ message: 'Invalid username' });
+    throw new CustomError(HTTP_STATUS.BAD_REQUEST, 'VALIDATION_FAILED', ERROR_MESSAGES.VALIDATION_FAILED);
   }
 
   try {
     const isTaken = await UserModel.isUsernameTaken(username);
 
     if (isTaken) {
-      return res.status(409).json({ message: 'Username is already taken' });
+      throw new CustomError(HTTP_STATUS.CONFLICT, 'USERNAME_TAKEN', ERROR_MESSAGES.USERNAME_TAKEN);
     }
 
     res.status(HTTP_STATUS.OK).json(generateSuccessResponse());
   } catch (error: any) {
     next(error);
-    console.error('Error checking username: ', error);
-    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
 // 이메일 중복 검사 라우트
 router.get('/api/user/check-email', async (req: Request, res: Response, next: NextFunction) => {
   if (!req.body.email) {
-    return res.status(400).json({ message: 'Invalid argument' });
+    throw new CustomError(HTTP_STATUS.BAD_REQUEST, 'MISSING_FIELDS', ERROR_MESSAGES.MISSING_FIELDS);
   }
-  const { email } = req.query;
+  const email = req.body.email;
   if (typeof email !== 'string') {
-    return res.status(400).json({ message: 'Invalid email' });
+    throw new CustomError(HTTP_STATUS.BAD_REQUEST, 'VALIDATION_FAILED', ERROR_MESSAGES.VALIDATION_FAILED);
   }
 
   try {
     const isTaken = await UserModel.isEmailTaken(email);
 
     if (isTaken) {
-      return res.status(409).json({ message: 'Email is already taken' });
+      throw new CustomError(HTTP_STATUS.CONFLICT, 'EMAIL_TAKEN', ERROR_MESSAGES.EMAIL_TAKEN);
     }
 
     res.status(HTTP_STATUS.OK).json(generateSuccessResponse());
   } catch (error: any) {
     next(error);
-    console.error('Error checking email: ', error);
-    res.status(500).json({ message: 'Internal server error' });
   }
 });
 

@@ -7,8 +7,8 @@
       "skipLibCheck": true,
       "forceConsistentCasingInFileNames": true,
       "outDir": "./dist",
-      "experimentalDecorators": true,  // 데코레이터 사용을 활성화
-      "emitDecoratorMetadata": true    // 데코레이터 메타데이터를 활성화
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
