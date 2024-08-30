@@ -1,8 +1,8 @@
 import express, { Router, Request, Response, NextFunction } from 'express';
 import UserModel from '../models/userModel';
-import { sendMail } from '../utils/mailer';
+import { sendEmail } from '../utils/mailer';
 import { generateRandomPassword } from '../utils/passwordGenerator';
-import { USER_CONST } from '../constants/userConst';
+import { USER_CONST, EMAIL_TYPE } from '../constants/userConst';
 import { ERROR_MESSAGES, DB_ERROR_TYPE } from '../constants/errorConst';
 import { HTTP_STATUS } from '../constants/httpStatus';
 import CustomError from '../errors/customError';
@@ -138,15 +138,12 @@ router.post('/api/user/find-id', async (req: Request, res: Response, next: NextF
   const { email } = req.body as FindIdRequestBody;
 
   try {
-    const username = await UserModel.findUsernameByEmail(email);
-    if (!username) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+    const user = await UserModel.findUsernameByEmail(email);
 
-    await sendMail({
+    await sendEmail({
       to: email,
-      subject: '아이디 찾기 결과입니다.',
-      text: `당신의 아이디는 ${username} 입니다.`,
+      username: user.username,
+      type: EMAIL_TYPE.FIND_ID
     });
 
     res.status(HTTP_STATUS.OK).json(generateSuccessResponse());
@@ -201,20 +198,16 @@ router.post('/api/user/find-pw', async (req: Request, res: Response, next: NextF
   }
   const { username, email } = req.body as FindPwRequestBody;
   try {
-    const isValidUser = await UserModel.findPWByUsernameAndEmail(username, email);
-    if (!isValidUser) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
+    const user = await UserModel.findPWByUsernameAndEmail(username, email);
     const updatedData: Partial<EditRequestBody> = {};
     updatedData.password = generateRandomPassword(USER_CONST.TEMP_PW_LENGTH);
 
     await UserModel.updateUser(username, updatedData);
 
-    await sendMail({
+    await sendEmail({
       to: email,
-      subject: '임시 비밀번호입니다.',
-      text: `임시 비밀번호는 ${updatedData.password} 입니다. 로그인 후 비밀번호를 수정해주세요.`,
+      password: user.password,
+      type: EMAIL_TYPE.FIND_PW
     });
 
     res.status(HTTP_STATUS.OK).json(generateSuccessResponse());

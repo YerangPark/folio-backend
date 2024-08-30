@@ -54,6 +54,14 @@ export class UserModel {
           ERROR_MESSAGES.INVALID_CREDENTIALS
         );
       }
+      const isPWMatch = await bcrypt.compare(password, user.password);
+      if (!isPWMatch) {
+        throw new CustomError(
+          HTTP_STATUS.UNAUTHORIZED,
+          'PASSWORD_MISMATCH',
+          ERROR_MESSAGES.PASSWORD_MISMATCH
+        );
+      }
 
       return user;
     } catch (dbError: any) {
@@ -66,7 +74,7 @@ export class UserModel {
   }
 
   //ANCHOR - 사용자 조회 (email 기준)
-  static async findUsernameByEmail(email: string): Promise<string> {
+  static async findUsernameByEmail(email: string): Promise<UserEntity> {
     try {
       const userRepository = AppDataSource.getRepository(UserEntity);
 
@@ -79,7 +87,7 @@ export class UserModel {
         );
       }
 
-      return user.username;
+      return user;
     } catch (dbError: any) {
       if (dbError instanceof CustomError) {
         throw dbError;
@@ -162,12 +170,12 @@ export class UserModel {
   }
 
   //ANCHOR - username과 email로 이루어진 사용자 찾기
-  static async findPWByUsernameAndEmail(username: string, email: string): Promise<boolean> {
+  static async findPWByUsernameAndEmail(username: string, email: string): Promise<UserEntity> {
     try {
       const userRepository = AppDataSource.getRepository(UserEntity);
 
-      const count = await userRepository.count({ where: { username, email } });
-      if (count === 0) {
+      const user = await userRepository.findOneBy({ username, email });
+      if (!user) {
         throw new CustomError(
           HTTP_STATUS.BAD_REQUEST,
           'USER_NOT_FOUND',
@@ -175,7 +183,7 @@ export class UserModel {
         );
       }
 
-      return count > 0;
+      return user;
     } catch (dbError: any) {
       if (dbError instanceof CustomError) {
         throw dbError;

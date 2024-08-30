@@ -5,7 +5,9 @@ export const ERROR_MESSAGES = {
   USER_NOT_FOUND         : '사용자를 찾을 수 없습니다.',
   MISSING_FIELDS         : '필수 입력 필드가 누락되었습니다.',
   INTERNAL_SERVER_ERROR  : '서버 에러가 발생하였습니다. 다시 시도해주세요.',
-  VALIDATION_FAILED      : '유효성 검사에 실패하였습니다. 입력 값을 확인해주세요.'
+  VALIDATION_FAILED      : '유효성 검사에 실패하였습니다. 입력 값을 확인해주세요.',
+  PASSWORD_MISMATCH      : '비밀번호가 일치하지 않습니다.',
+  EMAIL_SEND_FAILED      : '이메일 전송에 실패하였습니다.',
 };
 
 export const DB_ERROR_TYPE = {
