@@ -6,7 +6,9 @@
       "esModuleInterop": true,
       "skipLibCheck": true,
       "forceConsistentCasingInFileNames": true,
-      "outDir": "./dist"
+      "outDir": "./dist",
+      "experimentalDecorators": true,  // 데코레이터 사용을 활성화
+      "emitDecoratorMetadata": true    // 데코레이터 메타데이터를 활성화
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
