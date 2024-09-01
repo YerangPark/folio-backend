@@ -15,31 +15,16 @@ app.use(ErrorHandler);
 
 //SECTION - http://localhost:3000/경로 라우팅
 AppDataSource.initialize()
-  .then(() => {
-    console.log('Database initialized');
-    app.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT}`);
-    });
-  })
-  .catch((error) => {
-    console.error('Error during Data Source initialization:', error);
+.then(() => {
+  console.log('Database initialized');
+  app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
   });
+})
+.catch((error) => {
+  console.error('Error during Data Source initialization:', error);
+});
 
-// app.get('/', async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     console.log('Attempting to connect to the database');
-//     const conn = await getConnection();
-//     console.log('Database connection successful');
-
-//     const rows = await conn.query("SELECT 1 as val");
-//     console.log('Query result:', rows);
-//     conn.release();
-//     res.send('Databases connection successful');
-//   } catch (err) {
-//     console.log("Error during databases connection or query:", err)
-//     res.status(500).send('Database connnection failed');
-//   }
-// });
 
 // SECTION - 에러 처리 미들웨어
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

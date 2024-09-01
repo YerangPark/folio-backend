@@ -8,6 +8,8 @@ export const ERROR_MESSAGES = {
   VALIDATION_FAILED      : '유효성 검사에 실패하였습니다. 입력 값을 확인해주세요.',
   PASSWORD_MISMATCH      : '비밀번호가 일치하지 않습니다.',
   EMAIL_SEND_FAILED      : '이메일 전송에 실패하였습니다.',
+  FILENAME_TAKEN         : '파일명이 이미 사용중입니다.',
+  PORTFOLIO_NOT_FOUND    : '포트폴리오가 존재하지 않습니다.',
 };
 
 export const DB_ERROR_TYPE = {

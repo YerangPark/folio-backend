@@ -3,7 +3,7 @@ import UserModel from '../models/userModel';
 import { sendEmail } from '../utils/mailer';
 import { generateRandomPassword } from '../utils/passwordGenerator';
 import { USER_CONST, EMAIL_TYPE } from '../constants/userConst';
-import { ERROR_MESSAGES, DB_ERROR_TYPE } from '../constants/errorConst';
+import { ERROR_MESSAGES } from '../constants/errorConst';
 import { HTTP_STATUS } from '../constants/httpStatus';
 import CustomError from '../errors/customError';
 import { generateSuccessResponse } from '../responses/successResponse';
@@ -113,7 +113,7 @@ router.post('/api/user/sign', async (req: Request, res: Response, next: NextFunc
     next(error);
     // res.status(500).send(error.message);
   }
-})
+});
 
 //ANCHOR - 로그인
 router.post('/api/user/login', async (req: Request, res: Response, next: NextFunction) => {
@@ -128,7 +128,7 @@ router.post('/api/user/login', async (req: Request, res: Response, next: NextFun
   } catch (error: any) {
     next(error);
   }
-})
+});
 
 //ANCHOR - 아이디 찾기
 router.post('/api/user/find-id', async (req: Request, res: Response, next: NextFunction) => {
@@ -150,7 +150,7 @@ router.post('/api/user/find-id', async (req: Request, res: Response, next: NextF
   } catch (error: any) {
     next(error);
   }
-})
+});
 
 //ANCHOR - 사용자 정보 조회
 router.get('/api/user', async (req: Request, res: Response, next: NextFunction) => {
@@ -165,7 +165,7 @@ router.get('/api/user', async (req: Request, res: Response, next: NextFunction) 
   } catch (error: any) {
     next(error);
   }
-})
+});
 
 router.patch('/api/user', async (req: Request, res: Response, next: NextFunction) => {
   if (validateEditData(req.body)) {
@@ -189,7 +189,7 @@ router.patch('/api/user', async (req: Request, res: Response, next: NextFunction
     console.error('회원정보 수정 실패: ', error);
     res.status(500).send(error.message);
   }
-})
+});
 
 router.post('/api/user/find-pw', async (req: Request, res: Response, next: NextFunction) => {
   //ANCHOR - 유효성 검사
@@ -216,7 +216,7 @@ router.post('/api/user/find-pw', async (req: Request, res: Response, next: NextF
     console.error('이메일 전송 실패: ', error);
     res.status(500).send(error.message);
   }
-})
+});
 
 //TODO - 사용자 계정 삭제
 router.delete('/api/user/sign', async (req: Request, res: Response, next: NextFunction) => {
@@ -235,7 +235,7 @@ router.delete('/api/user/sign', async (req: Request, res: Response, next: NextFu
   } catch (error: any) {
     next(error);
   }
-})
+});
 
 //ANCHOR - ID 중복 검사 라우트
 router.get('/api/user/check-username', async (req: Request, res: Response, next: NextFunction) => {
