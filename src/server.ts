@@ -3,6 +3,7 @@ require('express-async-errors'); //NOTE - 비동기 에러 핸들링
 import express, { NextFunction, Request, Response } from 'express';
 import { getConnection } from './config/db';
 import userRoutes from './routes/userRoutes';
+import portfolioRoutes from './routes/portfolioRoutes';
 import ErrorHandler from './middlewares/errorHandler';
 import AppDataSource from '../ormconfig';
 
@@ -11,6 +12,7 @@ const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 app.use(express.json());
 app.use(userRoutes);
+app.use(portfolioRoutes);
 app.use(ErrorHandler);
 
 //SECTION - http://localhost:3000/경로 라우팅

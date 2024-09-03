@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from "typeorm";
-import { PortfolioEntity } from "./portfolioEntity";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { PortfolioSkillEntity } from "./portfolioSkillEntity";
+import { ProjectSkillEntity } from "./projectSkillEntity";
 
 @Entity({ name: "skills" })
 export class SkillEntity {
@@ -24,6 +25,9 @@ export class SkillEntity {
   })
   category!: 'frontend' | 'backend' | 'database' | 'devops' | 'infrastructure' | 'version-control' | 'collaboration' | 'others';
 
-  @ManyToMany(() => PortfolioEntity, portfolio => portfolio.skills)
-  portfolios!: PortfolioEntity[];
+  @OneToMany(() => PortfolioSkillEntity, portfolioSkill => portfolioSkill.skill)
+  portfolioSkills!: PortfolioSkillEntity[];
+
+  @OneToMany(() => ProjectSkillEntity, projectSkill => projectSkill.skill)
+  projectSkills!: ProjectSkillEntity[];
 }

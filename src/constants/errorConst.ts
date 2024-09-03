@@ -10,6 +10,7 @@ export const ERROR_MESSAGES = {
   EMAIL_SEND_FAILED      : '이메일 전송에 실패하였습니다.',
   FILENAME_TAKEN         : '파일명이 이미 사용중입니다.',
   PORTFOLIO_NOT_FOUND    : '포트폴리오가 존재하지 않습니다.',
+  SKILL_NOT_FOUND        : '존재하지 않는 스킬입니다.'
 };
 
 export const DB_ERROR_TYPE = {

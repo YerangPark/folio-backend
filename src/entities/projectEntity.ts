@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable, OneToMany } from "typeorm";
 import { PortfolioEntity } from "./portfolioEntity";
 import { SkillEntity } from "./skillEntity";
+import { ProjectSkillEntity } from "./projectSkillEntity";
 
 @Entity({ name: "projects" })
 export class ProjectEntity {
@@ -34,17 +35,6 @@ export class ProjectEntity {
   @Column({ type: "varchar", length: 255, nullable: true })
   readme_file!: string;
 
-  @ManyToMany(() => SkillEntity)
-  @JoinTable({
-    name: "project_skills",
-    joinColumn: {
-      name: "project_id",
-      referencedColumnName: "id"
-    },
-    inverseJoinColumn: {
-      name: "skill_id",
-      referencedColumnName: "id"
-    }
-  })
-  skills!: SkillEntity[];
+  @OneToMany(() => ProjectSkillEntity, projectSkill => projectSkill.project)
+  projectSkills!: ProjectSkillEntity[];
 }

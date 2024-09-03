@@ -1,17 +1,23 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from "typeorm";
-import { PortfolioEntity } from "./portfolioEntity";
+import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, JoinColumn } from "typeorm";
+import { ProjectEntity } from "./projectEntity";
+import { SkillEntity } from "./skillEntity";
 
-@Entity({ name: "skills" })
-export class SkillEntity {
+@Entity({ name: "project_skills" })
+export class ProjectSkillEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ type: "varchar", length: 100 })
-  name!: string;
+  @Column()
+  project_id!: number;
 
-  @Column({ type: "enum", enum: ['frontend', 'backend', 'database', 'devops', 'infrastructure', 'version-control', 'collaboration', 'others'] })
-  category!: 'frontend' | 'backend' | 'database' | 'devops' | 'infrastructure' | 'version-control' | 'collaboration' | 'others';
+  @Column()
+  skill_id!: number;
 
-  @ManyToMany(() => PortfolioEntity, portfolio => portfolio.skills)
-  portfolios!: PortfolioEntity[];
+  @ManyToOne(() => ProjectEntity, project => project.projectSkills, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'project_id' })
+  project!: ProjectEntity;
+
+  @ManyToOne(() => SkillEntity, skill => skill.portfolioSkills, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'skill_id' })
+  skill!: SkillEntity;
 }

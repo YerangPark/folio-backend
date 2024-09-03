@@ -1,7 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
 import { UserEntity } from "./userEntity";
-import { SkillEntity } from "./skillEntity";
 import { ProjectEntity } from "./projectEntity";
+import { PortfolioSkillEntity } from "./portfolioSkillEntity"; // PortfolioSkillEntity를 임포트
 
 @Entity({ name: "portfolios" })
 export class PortfolioEntity {
@@ -32,19 +32,8 @@ export class PortfolioEntity {
   @UpdateDateColumn({ type: "timestamp" })
   updated_at!: Date;
 
-  @ManyToMany(() => SkillEntity)
-  @JoinTable({
-    name: "portfolio_skills",
-    joinColumn: {
-      name: "portfolio_id",
-      referencedColumnName: "id"
-    },
-    inverseJoinColumn: {
-      name: "skill_id",
-      referencedColumnName: "id"
-    }
-  })
-  skills!: SkillEntity[];
+  @OneToMany(() => PortfolioSkillEntity, portfolioSkill => portfolioSkill.portfolio)
+  portfolioSkills!: PortfolioSkillEntity[];
 
   @OneToMany(() => ProjectEntity, project => project.portfolio)
   projects!: ProjectEntity[];
