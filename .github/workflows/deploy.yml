@@ -28,12 +28,18 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
-    - name: Test DB connection
+    - name: Set up SSH tunnel to MariaDB
       run: |
-        ping -c 3 ${{ secrets.DB_HOST }} || echo "DB Host not reachable"
-        nc -zv ${{ secrets.DB_HOST }} 3306 || echo "Cannot connect to DB"
+        ssh -L 3306:localhost:3306 -f -N -M -S my-ssh-socket -o StrictHostKeyChecking=no \
+        -i ${{ secrets.SSH_PRIVATE_KEY }} \
+        -p ${{ secrets.SSH_PORT }} \
+        ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}
 
-    - name: Run TypeORM migrations (Remote DB)
+    - name: Test DB connection (via SSH tunnel)
+      run: |
+        nc -zv 127.0.0.1 3306 || echo "Cannot connect to DB"
+
+    - name: Run TypeORM migrations (Remote DB via SSH tunnel)
       env:
         DB_HOST: ${{ secrets.DB_HOST }}
         DB_PORT: 3306
