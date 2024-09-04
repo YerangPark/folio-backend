@@ -46,13 +46,8 @@ jobs:
         nc -zv 127.0.0.1 3306 || echo "Cannot connect to DB"
 
     - name: Run TypeORM migrations (Remote DB via SSH tunnel)
-      env:
-        DB_HOST: 127.0.0.1  # 로컬호스트로 포트포워딩된 DB에 접근
-        DB_PORT: 3306
-        DB_USER: ${{ secrets.DB_USER }}
-        DB_PASSWORD: ${{ secrets.DB_PASS }}
-        DB_NAME: ${{ secrets.DB_NAME }}
-      run: npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d ./ormconfig.ts
+      run: |
+        DB_PASSWORD=${{ secrets.DB_PASS }} DB_HOST=${{ secrets.DB_HOST }} DB_USER=${{ secrets.DB_USER }} DB_NAME=${{ secrets.DB_NAME }} npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d ./ormconfig.ts
 
     - name: Log in to DockerHub
       uses: docker/login-action@v2
