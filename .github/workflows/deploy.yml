@@ -28,6 +28,11 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
+    - name: Test DB connection
+      run: |
+        ping -c 3 ${{ secrets.DB_HOST }} || echo "DB Host not reachable"
+        nc -zv ${{ secrets.DB_HOST }} 3306 || echo "Cannot connect to DB"
+
     - name: Run TypeORM migrations (Remote DB)
       env:
         DB_HOST: ${{ secrets.DB_HOST }}
