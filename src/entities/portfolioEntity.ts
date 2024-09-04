@@ -32,9 +32,9 @@ export class PortfolioEntity {
   @UpdateDateColumn({ type: "timestamp" })
   updated_at!: Date;
 
-  @OneToMany(() => PortfolioSkillEntity, portfolioSkill => portfolioSkill.portfolio)
+  @OneToMany(() => PortfolioSkillEntity, portfolioSkill => portfolioSkill.portfolio, { cascade: true, onDelete: 'CASCADE' })
   portfolioSkills!: PortfolioSkillEntity[];
 
-  @OneToMany(() => ProjectEntity, project => project.portfolio)
+  @OneToMany(() => ProjectEntity, project => project.portfolio, { cascade: true, onDelete: 'CASCADE' })
   projects!: ProjectEntity[];
 }

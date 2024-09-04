@@ -8,7 +8,7 @@ export class ProjectEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => PortfolioEntity, portfolio => portfolio.projects)
+  @ManyToOne(() => PortfolioEntity, portfolio => portfolio.projects, { onDelete: 'CASCADE' })
   portfolio!: PortfolioEntity;
 
   @Column({ type: "varchar", length: 150 })

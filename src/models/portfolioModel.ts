@@ -8,6 +8,12 @@ import { ProjectSkillEntity } from '../entities/projectSkillEntity';
 import { DeepPartial } from 'typeorm';
 
 export class PortfolioModel {
+  // 파일명으로 포트폴리오 찾기
+  static async findPortfolioByFileName(fileName: string): Promise<PortfolioEntity | null> {
+    const portfolioRepository = AppDataSource.getRepository(PortfolioEntity);
+    return await portfolioRepository.findOne({ where: { file_name: fileName } });
+  }
+
   // 포트폴리오 생성
   static async createPortfolio(portfolioData: DeepPartial<PortfolioEntity>): Promise<PortfolioEntity> {
     console.log(`portfolioData : ${JSON.stringify(portfolioData, null, 2)}`);

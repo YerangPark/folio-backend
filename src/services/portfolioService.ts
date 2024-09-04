@@ -4,6 +4,8 @@ import CustomError from '../errors/customError';
 import { HTTP_STATUS } from '../constants/httpStatus';
 import { PortfolioEntity } from '../entities/portfolioEntity';
 import { ERROR_MESSAGES } from '../constants/errorConst';
+import AppDataSource from '../../ormconfig';
+import { QueryRunner } from 'typeorm';
 
 interface ProjectSkill {
   id: number;
@@ -40,51 +42,71 @@ interface Portfolio {
 class PortfolioService {
   // 포트폴리오 생성
   static async createPortfolio(portfolioData: Portfolio): Promise<PortfolioEntity> {
-    const newPortfolio = await PortfolioModel.createPortfolio({
-      user: { id: portfolioData.user_id },
-      file_name: portfolioData.file_name,
-      title: portfolioData.title,
-      description: portfolioData.description,
-      github_link: portfolioData.github_link,
-      blog_link: portfolioData.blog_link,
-    });
+    const queryRunner: QueryRunner = AppDataSource.createQueryRunner();
 
-    if (portfolioData.skills) {
-      for (const skill of portfolioData.skills) {
-        const skillEntity = await PortfolioModel.findSkillById(skill.id);
-        if (!skillEntity) {
-          throw new CustomError(HTTP_STATUS.BAD_REQUEST, 'SKILL_NOT_FOUND', ERROR_MESSAGES.SKILL_NOT_FOUND);
-        }
-        await PortfolioModel.addSkillToPortfolio(newPortfolio, skillEntity);
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const existingPortfolio = await PortfolioModel.findPortfolioByFileName(portfolioData.file_name);
+      if (existingPortfolio) {
+        throw new CustomError(HTTP_STATUS.BAD_REQUEST, 'FILENAME_TAKEN', ERROR_MESSAGES.FILENAME_TAKEN);
       }
-    }
 
-    if (portfolioData.projects) {
-      for (const project of portfolioData.projects) {
-        const newProject = await PortfolioModel.createProject({
-          name: project.name,
-          image: project.image,
-          start_date: project.start_date,
-          end_date: project.end_date,
-          github_link: project.github_link,
-          site_link: project.site_link,
-          description: project.description,
-          portfolio: newPortfolio,
-        });
+      const newPortfolio = await PortfolioModel.createPortfolio({
+        user: { id: portfolioData.user_id },
+        file_name: portfolioData.file_name,
+        title: portfolioData.title,
+        description: portfolioData.description,
+        github_link: portfolioData.github_link,
+        blog_link: portfolioData.blog_link,
+      });
 
-        if (project.skills) {
-          for (const skill of project.skills) {
-            const skillEntity = await PortfolioModel.findSkillById(skill.id);
-            if (!skillEntity) {
-              throw new CustomError(HTTP_STATUS.BAD_REQUEST, 'SKILL_NOT_FOUND', ERROR_MESSAGES.SKILL_NOT_FOUND);
+      if (portfolioData.skills) {
+        for (const skill of portfolioData.skills) {
+          const skillEntity = await PortfolioModel.findSkillById(skill.id);
+          if (!skillEntity) {
+            throw new CustomError(HTTP_STATUS.BAD_REQUEST, 'SKILL_NOT_FOUND', ERROR_MESSAGES.SKILL_NOT_FOUND);
+          }
+          // await queryRunner.manager.save(PortfolioModel.addSkillToPortfolio(newPortfolio, skillEntity));
+          await PortfolioModel.addSkillToPortfolio(newPortfolio, skillEntity);
+        }
+      }
+
+      if (portfolioData.projects) {
+        for (const project of portfolioData.projects) {
+          const newProject = await PortfolioModel.createProject({
+            name: project.name,
+            image: project.image,
+            start_date: project.start_date,
+            end_date: project.end_date,
+            github_link: project.github_link,
+            site_link: project.site_link,
+            description: project.description,
+            portfolio: newPortfolio,
+          });
+
+          if (project.skills) {
+            for (const skill of project.skills) {
+              const skillEntity = await PortfolioModel.findSkillById(skill.id);
+              if (!skillEntity) {
+                throw new CustomError(HTTP_STATUS.BAD_REQUEST, 'SKILL_NOT_FOUND', ERROR_MESSAGES.SKILL_NOT_FOUND);
+              }
+              await PortfolioModel.addSkillToProject(newProject, skillEntity);
+              // await queryRunner.manager.save(PortfolioModel.addSkillToProject(newProject, skillEntity));
             }
-            await PortfolioModel.addSkillToProject(newProject, skillEntity);
           }
         }
       }
-    }
 
-    return newPortfolio;
+      await queryRunner.commitTransaction();
+      return newPortfolio;
+    } catch (error: any) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   // 포트폴리오 조회
