@@ -50,7 +50,7 @@ jobs:
         DB_HOST: 127.0.0.1
         DB_PORT: 3306
         DB_USER: ${{ secrets.DB_USER }}
-        DB_PASSWORD: ${{ secrets.DB_PASS }}
+        DB_PASS: ${{ secrets.DB_PASS }}
         DB_NAME: ${{ secrets.DB_NAME }}
       run: |
         npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d ./ormconfig.ts
