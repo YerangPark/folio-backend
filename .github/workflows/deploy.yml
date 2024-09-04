@@ -35,7 +35,8 @@ jobs:
         DB_USER: ${{ secrets.DB_USER }}
         DB_PASSWORD: ${{ secrets.DB_PASS }}
         DB_NAME: ${{ secrets.DB_NAME }}
-      run: npx typeorm migration:run -d ./ormconfig.ts
+      run: |
+        npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d ./ormconfig.ts
 
     - name: Log in to DockerHub
       uses: docker/login-action@v2
