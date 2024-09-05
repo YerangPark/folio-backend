@@ -8,8 +8,8 @@
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "typeorm": "npx typeorm",
-    "typeorm:migration:generate": "npx typeorm migration:generate",
-    "typeorm:migration:run": "npx typeorm migration:run"
+    "typeorm:migration:generate": "npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate src/migration/folio_migration -d ormconfig.ts",
+    "typeorm:migration:run": "npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d ormconfig.ts"
   },
   "keywords": [],
   "author": "",

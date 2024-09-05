@@ -41,6 +41,13 @@ jobs:
         -p ${{ secrets.SSH_PORT }} \
         ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}
 
+    - name: Verify DB connection persistency
+      run: |
+        for i in {1..5}; do
+          nc -zv 127.0.0.1 3306 || { echo "Cannot connect to DB" && exit 1; }
+          sleep 5
+        done
+
     - name: Test DB connection (via SSH tunnel)
       run: |
         nc -zv 127.0.0.1 3306 || echo "Cannot connect to DB"
