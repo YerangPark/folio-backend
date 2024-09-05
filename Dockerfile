@@ -20,7 +20,7 @@ COPY . .
 RUN npm run build
 
 # TypeORM 마이그레이션을 실행
-RUN npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d ./ormconfig.ts
+# RUN npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d ./ormconfig.ts
 
 # 애플리케이션 포트를 노출합니다.
 EXPOSE 3000
