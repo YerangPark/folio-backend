@@ -1,5 +1,5 @@
-import { ApiResponse } from "./apiResponse";
-import CustomError from "../errors/customError";
+import { ApiResponse } from "./apiResponse.js";
+import CustomError from "../errors/customError.js";
 
 //SECTION - 에러
 interface ErrorResponse extends ApiResponse{

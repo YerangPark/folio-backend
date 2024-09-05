@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
-import { PortfolioSkillEntity } from "./portfolioSkillEntity";
-import { ProjectSkillEntity } from "./projectSkillEntity";
+import { PortfolioSkillEntity } from "./portfolioSkillEntity.js";
+import { ProjectSkillEntity } from "./projectSkillEntity.js";
 
 @Entity({ name: "skills" })
 export class SkillEntity {

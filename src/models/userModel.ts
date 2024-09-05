@@ -1,9 +1,9 @@
-import AppDataSource from '../../ormconfig';
-import { UserEntity } from '../entities/userEntity';
-import CustomError from '../errors/customError';
-import { HTTP_STATUS } from '../constants/httpStatus';
-import { ERROR_MESSAGES } from '../constants/errorConst';
-import DBCustomError from '../errors/dbCustomError';
+import AppDataSource from '../../ormconfig.js';
+import { UserEntity } from '../entities/userEntity.js';
+import CustomError from '../errors/customError.js';
+import { HTTP_STATUS } from '../constants/httpStatus.js';
+import { ERROR_MESSAGES } from '../constants/errorConst.js';
+import DBCustomError from '../errors/dbCustomError.js';
 import bcrypt from 'bcrypt';
 
 interface User {

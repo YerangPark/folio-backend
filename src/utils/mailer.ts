@@ -1,13 +1,14 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
 import nodemailer from 'nodemailer';
 import fs from 'fs';
 import ejs from 'ejs';
 import path from 'path';
-import { EMAIL_TYPE } from '../constants/userConst';
-import CustomError from '../errors/customError';
-import { HTTP_STATUS } from '../constants/httpStatus';
-import { ERROR_MESSAGES } from '../constants/errorConst';
+import { EMAIL_TYPE } from '../constants/userConst.js';
+import CustomError from '../errors/customError.js';
+import { HTTP_STATUS } from '../constants/httpStatus.js';
+import { ERROR_MESSAGES } from '../constants/errorConst.js';
 
 interface SendEmailProps {
   type: number,

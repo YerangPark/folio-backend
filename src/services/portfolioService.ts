@@ -1,11 +1,12 @@
 // src/services/portfolioService.ts
-import PortfolioModel from '../models/portfolioModel';
-import CustomError from '../errors/customError';
-import { HTTP_STATUS } from '../constants/httpStatus';
-import { PortfolioEntity } from '../entities/portfolioEntity';
-import { ERROR_MESSAGES } from '../constants/errorConst';
-import AppDataSource from '../../ormconfig';
+import PortfolioModel from '../models/portfolioModel.js';
+import CustomError from '../errors/customError.js';
+import { HTTP_STATUS } from '../constants/httpStatus.js';
+import { PortfolioEntity } from '../entities/portfolioEntity.js';
+import { ERROR_MESSAGES } from '../constants/errorConst.js';
+import AppDataSource from '../../ormconfig.js';
 import { QueryRunner } from 'typeorm';
+import { UserEntity } from '../entities/userEntity.js';
 
 interface ProjectSkill {
   id: number;
@@ -54,7 +55,7 @@ class PortfolioService {
       }
 
       const newPortfolio = await PortfolioModel.createPortfolio({
-        user: { id: portfolioData.user_id },
+        user: Promise.resolve({ id: portfolioData.user_id } as UserEntity),
         file_name: portfolioData.file_name,
         title: portfolioData.title,
         description: portfolioData.description,
@@ -83,7 +84,7 @@ class PortfolioService {
             github_link: project.github_link,
             site_link: project.site_link,
             description: project.description,
-            portfolio: newPortfolio,
+            portfolio: Promise.resolve(newPortfolio),
           });
 
           if (project.skills) {
@@ -154,7 +155,7 @@ class PortfolioService {
           github_link: project.github_link,
           site_link: project.site_link,
           description: project.description,
-          portfolio: existingPortfolio,
+          portfolio: Promise.resolve(existingPortfolio),
         });
 
         if (project.skills) {

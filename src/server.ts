@@ -1,11 +1,12 @@
-require('dotenv').config();
-require('express-async-errors'); //NOTE - 비동기 에러 핸들링
+import dotenv from 'dotenv';
+import 'express-async-errors'; //NOTE - 비동기 에러 핸들링
 import express, { NextFunction, Request, Response } from 'express';
-import { getConnection } from './config/db';
-import userRoutes from './routes/userRoutes';
-import portfolioRoutes from './routes/portfolioRoutes';
-import ErrorHandler from './middlewares/errorHandler';
-import AppDataSource from '../ormconfig';
+import userRoutes from './routes/userRoutes.js';
+import portfolioRoutes from './routes/portfolioRoutes.js';
+import ErrorHandler from './middlewares/errorHandler.js';
+import AppDataSource from '../ormconfig.js';
+
+dotenv.config();
 
 const app = express();
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;

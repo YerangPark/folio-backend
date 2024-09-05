@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, JoinColumn } from "typeorm";
-import { ProjectEntity } from "./projectEntity";
-import { SkillEntity } from "./skillEntity";
+import { ProjectEntity } from "./projectEntity.js";
+import { SkillEntity } from "./skillEntity.js";
 
 @Entity({ name: "project_skills" })
 export class ProjectSkillEntity {
@@ -13,11 +13,11 @@ export class ProjectSkillEntity {
   @Column()
   skill_id!: number;
 
-  @ManyToOne(() => ProjectEntity, project => project.projectSkills, { onDelete: 'CASCADE' })
+  @ManyToOne(() => ProjectEntity, (project) => project.projectSkills, { onDelete: 'CASCADE', lazy: true })
   @JoinColumn({ name: 'project_id' })
-  project!: ProjectEntity;
+  project!: Promise<ProjectEntity>;
 
-  @ManyToOne(() => SkillEntity, skill => skill.portfolioSkills, { onDelete: 'CASCADE' })
+  @ManyToOne(() => SkillEntity, (skill) => skill.projectSkills, { onDelete: 'CASCADE', lazy: true })
   @JoinColumn({ name: 'skill_id' })
-  skill!: SkillEntity;
+  skill!: Promise<SkillEntity>;
 }

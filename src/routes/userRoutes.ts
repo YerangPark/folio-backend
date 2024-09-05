@@ -1,12 +1,12 @@
 import express, { Router, Request, Response, NextFunction } from 'express';
-import UserModel from '../models/userModel';
-import { sendEmail } from '../utils/mailer';
-import { generateRandomPassword } from '../utils/passwordGenerator';
-import { USER_CONST, EMAIL_TYPE } from '../constants/userConst';
-import { ERROR_MESSAGES } from '../constants/errorConst';
-import { HTTP_STATUS } from '../constants/httpStatus';
-import CustomError from '../errors/customError';
-import { generateSuccessResponse } from '../responses/successResponse';
+import UserModel from '../models/userModel.js';
+import { sendEmail } from '../utils/mailer.js';
+import { generateRandomPassword } from '../utils/passwordGenerator.js';
+import { USER_CONST, EMAIL_TYPE } from '../constants/userConst.js';
+import { ERROR_MESSAGES } from '../constants/errorConst.js';
+import { HTTP_STATUS } from '../constants/httpStatus.js';
+import CustomError from '../errors/customError.js';
+import { generateSuccessResponse } from '../responses/successResponse.js';
 
 const router = express.Router();
 

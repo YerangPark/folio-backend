@@ -5,9 +5,9 @@
  * @param {string} message - 개발자를 위한 에러 메세지
  */
 
-import CustomError from './customError'; // 커스텀 에러 클래스
-import { HTTP_STATUS } from '../constants/httpStatus'; // HTTP 상태 코드 정의
-import { DB_ERROR_TYPE } from '../constants/errorConst';
+import CustomError from './customError.js'; // 커스텀 에러 클래스
+import { HTTP_STATUS } from '../constants/httpStatus.js'; // HTTP 상태 코드 정의
+import { DB_ERROR_TYPE } from '../constants/errorConst.js';
 
 class DBCustomError extends CustomError {
     constructor(dbError: any) {

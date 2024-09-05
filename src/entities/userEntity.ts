@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, Unique, CreateDateColumn, OneToMany } from "typeorm";
-import { PortfolioEntity } from "./portfolioEntity";
+import { PortfolioEntity } from "./portfolioEntity.js";
 
 @Entity({ name: "users" })
 @Unique(["username"])
@@ -26,6 +26,6 @@ export class UserEntity {
   @CreateDateColumn({ type: "timestamp" })
   created_at!: Date;
 
-  @OneToMany(() => PortfolioEntity, portfolio => portfolio.user)
+  @OneToMany(() => PortfolioEntity, (portfolio) => portfolio.user)
   portfolios!: PortfolioEntity[];
 }

@@ -1,15 +1,14 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable, OneToMany } from "typeorm";
-import { PortfolioEntity } from "./portfolioEntity";
-import { SkillEntity } from "./skillEntity";
-import { ProjectSkillEntity } from "./projectSkillEntity";
+import { PortfolioEntity } from "./portfolioEntity.js";
+import { ProjectSkillEntity } from "./projectSkillEntity.js";
 
 @Entity({ name: "projects" })
 export class ProjectEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => PortfolioEntity, portfolio => portfolio.projects, { onDelete: 'CASCADE' })
-  portfolio!: PortfolioEntity;
+  @ManyToOne(() => PortfolioEntity, portfolio => portfolio.projects, { onDelete: 'CASCADE', lazy: true })
+  portfolio!: Promise<PortfolioEntity>;
 
   @Column({ type: "varchar", length: 150 })
   name!: string;

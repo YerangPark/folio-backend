@@ -1,8 +1,8 @@
 // src/routes/portfolioRoute.ts
 import express, { Router, Request, Response, NextFunction } from 'express';
-import PortfolioService from '../services/portfolioService';
-import { generateSuccessResponse } from '../responses/successResponse';
-import { HTTP_STATUS } from '../constants/httpStatus';
+import PortfolioService from '../services/portfolioService.js';
+import { generateSuccessResponse } from '../responses/successResponse.js';
+import { HTTP_STATUS } from '../constants/httpStatus.js';
 
 const router = express.Router();
 

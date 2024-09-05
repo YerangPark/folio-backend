@@ -1,4 +1,4 @@
-import { ApiResponse } from "./apiResponse";
+import { ApiResponse } from "./apiResponse.js";
 
 //SECTION - 성공
 interface SuccessResponse<T> extends ApiResponse {

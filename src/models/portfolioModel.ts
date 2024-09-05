@@ -1,10 +1,10 @@
 // src/models/portfolioModel.ts
-import AppDataSource from '../../ormconfig';
-import { PortfolioEntity } from '../entities/portfolioEntity';
-import { ProjectEntity } from '../entities/projectEntity';
-import { SkillEntity } from '../entities/skillEntity';
-import { PortfolioSkillEntity } from '../entities/portfolioSkillEntity';
-import { ProjectSkillEntity } from '../entities/projectSkillEntity';
+import AppDataSource from '../../ormconfig.js';
+import { PortfolioEntity } from '../entities/portfolioEntity.js';
+import { ProjectEntity } from '../entities/projectEntity.js';
+import { SkillEntity } from '../entities/skillEntity.js';
+import { PortfolioSkillEntity } from '../entities/portfolioSkillEntity.js';
+import { ProjectSkillEntity } from '../entities/projectSkillEntity.js';
 import { DeepPartial } from 'typeorm';
 
 export class PortfolioModel {
@@ -32,10 +32,17 @@ export class PortfolioModel {
   // 포트폴리오에 스킬 추가
   static async addSkillToPortfolio(portfolio: PortfolioEntity, skill: SkillEntity): Promise<void> {
     const portfolioSkillRepository = AppDataSource.getRepository(PortfolioSkillEntity);
-    const portfolioSkill = portfolioSkillRepository.create({ portfolio, skill });
+
+    // PortfolioSkillEntity 수동 생성 및 할당
+    const portfolioSkill = new PortfolioSkillEntity();
+
+    // Lazy-loaded 관계의 Promise를 await으로 풀어서 실제 객체를 할당
+    portfolioSkill.portfolio = Promise.resolve(portfolio);  // lazy로 인해 Promise로 감싸줌
+    portfolioSkill.skill = Promise.resolve(skill);  // lazy로 인해 Promise로 감싸줌
+
+    // 저장
     await portfolioSkillRepository.save(portfolioSkill);
   }
-
   // 프로젝트 생성
   static async createProject(projectData: DeepPartial<ProjectEntity>): Promise<ProjectEntity> {
     const projectRepository = AppDataSource.getRepository(ProjectEntity);
@@ -46,7 +53,15 @@ export class PortfolioModel {
   // 프로젝트에 스킬 추가
   static async addSkillToProject(project: ProjectEntity, skill: SkillEntity): Promise<void> {
     const projectSkillRepository = AppDataSource.getRepository(ProjectSkillEntity);
-    const projectSkill = projectSkillRepository.create({ project, skill });
+
+    // PortfolioSkillEntity 수동 생성 및 할당
+    const projectSkill = new ProjectSkillEntity();
+
+    // Lazy-loaded 관계의 Promise를 await으로 풀어서 실제 객체를 할당
+    projectSkill.project = Promise.resolve(project);  // lazy로 인해 Promise로 감싸줌
+    projectSkill.skill = Promise.resolve(skill);  // lazy로 인해 Promise로 감싸줌
+
+    // 저장
     await projectSkillRepository.save(projectSkill);
   }
 
