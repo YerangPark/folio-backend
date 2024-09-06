@@ -45,8 +45,3 @@ app.get('/ping', (req: Request, res: Response) => {
   console.log('Ping received');
   res.send('pong');  // 응답을 반환
 });
-
-// 서버 실행
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
