@@ -4,7 +4,7 @@ import CustomError from '../errors/customError.js';
 import { HTTP_STATUS } from '../constants/httpStatus.js';
 import { ERROR_MESSAGES } from '../constants/errorConst.js';
 import DBCustomError from '../errors/dbCustomError.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 interface User {
   id?: number;

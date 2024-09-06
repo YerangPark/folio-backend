@@ -27,6 +27,7 @@ Thumbs.db
 # 빌드 디렉토리 (Webpack, Babel 등에서 생성되는 경우)
 dist/
 build/
+dist/*
 
 # 캐시 디렉토리
 .cache/
