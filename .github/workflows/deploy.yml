@@ -79,4 +79,4 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: ${{ secrets.SSH_PORT }}
         script: |
-          docker exec backend-container npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d ./ormconfig.ts
+          docker exec backend-container npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d ./dist/ormconfig.js
