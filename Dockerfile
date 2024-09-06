@@ -23,7 +23,7 @@ RUN npm run build
 # RUN npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d ./ormconfig.ts
 
 # 애플리케이션 포트를 노출합니다.
-EXPOSE 3000
+EXPOSE 3001
 
 # 애플리케이션을 시작합니다.
 CMD ["npm", "start"]

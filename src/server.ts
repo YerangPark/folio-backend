@@ -9,14 +9,14 @@ import AppDataSource from '../ormconfig.js';
 dotenv.config();
 
 const app = express();
-const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
 
 app.use(express.json());
 app.use(userRoutes);
 app.use(portfolioRoutes);
 app.use(ErrorHandler);
 
-//SECTION - http://localhost:3000/경로 라우팅
+//SECTION
 AppDataSource.initialize()
 .then(() => {
   console.log('Database initialized');

@@ -69,7 +69,7 @@ jobs:
             -e DB_USER=${{ secrets.DB_USER }} \
             -e DB_PASS=${{ secrets.DB_PASS }} \
             -e DB_NAME=${{ secrets.DB_NAME }} \
-            -p 8080:3000 ${{ secrets.DOCKERHUB_USERNAME }}/folio-backend:latest
+            -p 8080:3001 ${{ secrets.DOCKERHUB_USERNAME }}/folio-backend:latest
 
     - name: Run TypeORM migrations (on Deploy Server)
       uses: appleboy/ssh-action@v0.1.7
