@@ -193,7 +193,7 @@ router.patch('/api/user', async (req: Request, res: Response, next: NextFunction
 
 router.post('/api/user/find-pw', async (req: Request, res: Response, next: NextFunction) => {
   //ANCHOR - 유효성 검사
-  if (!req.body.email) {
+  if (!req.body.email || !req.body.username) {
     throw new CustomError(HTTP_STATUS.BAD_REQUEST, 'MISSING_FIELDS', ERROR_MESSAGES.MISSING_FIELDS);
   }
   const { username, email } = req.body as FindPwRequestBody;
@@ -206,7 +206,7 @@ router.post('/api/user/find-pw', async (req: Request, res: Response, next: NextF
 
     await sendEmail({
       to: email,
-      password: user.password,
+      password: updatedData.password,
       type: EMAIL_TYPE.FIND_PW
     });
 

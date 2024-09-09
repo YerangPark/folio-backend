@@ -1,5 +1,7 @@
 import dotenv from 'dotenv';
+import "reflect-metadata";
 import 'express-async-errors'; //NOTE - 비동기 에러 핸들링
+import cors from 'cors';
 import express, { NextFunction, Request, Response } from 'express';
 import userRoutes from './routes/userRoutes.js';
 import portfolioRoutes from './routes/portfolioRoutes.js';
@@ -10,6 +12,13 @@ dotenv.config();
 
 const app = express();
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
+
+// CORS 설정
+app.use(cors({
+  origin: 'http://localhost:3000', // 허용할 도메인
+  methods: ['GET', 'POST', 'UPDATE', 'DELETE', 'PATCH'], // 허용할 메서드
+  credentials: true // 쿠키 사용을 허용할 경우 true
+}));
 
 app.use(express.json());
 app.use(userRoutes);
@@ -38,7 +47,6 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
       ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
 });
-
 
 //SECTION - 테스트용
 app.get('/ping', (req: Request, res: Response) => {

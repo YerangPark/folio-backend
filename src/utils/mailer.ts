@@ -9,6 +9,8 @@ import { EMAIL_TYPE } from '../constants/userConst.js';
 import CustomError from '../errors/customError.js';
 import { HTTP_STATUS } from '../constants/httpStatus.js';
 import { ERROR_MESSAGES } from '../constants/errorConst.js';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
 interface SendEmailProps {
   type: number,
@@ -34,6 +36,8 @@ const transporter = nodemailer.createTransport({
 // 메일 전송 함수
 export async function sendEmail({ type, to, username, password }: SendEmailProps) {
   try {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
     // 이메일 템플릿 렌더링
     const templatePath = path.join(__dirname, '../templates', 'emailTemplate.html');
     console.log(templatePath);

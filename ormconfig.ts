@@ -12,9 +12,9 @@ const options: DataSourceOptions = {
   database: process.env.DB_NAME,
   synchronize: true,
   logging: true,
-  entities: ["src/entities/*.js"],
-  migrations: ["src/migration/*.js"],
-  subscribers: ["src/subscriber/*.js"]
+  entities: ["dist/src/entities/**/*.js"],
+  migrations: ["dist/src/migration/*.js"],
+  subscribers: ["dist/src/subscriber/*.js"]
 };
 
 const AppDataSource = new DataSource(options);
