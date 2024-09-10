@@ -51,6 +51,7 @@ interface SignoutRequestBody {
 
 //SECTION - 유효성 검사 함수
 function validateSignupData(data: SignupRequestBody): boolean {
+
   if (!data || !data.username || !data.password || !data.name || !data.birthdate || !data.email) {
     throw new CustomError(HTTP_STATUS.BAD_REQUEST, 'MISSING_FIELDS', ERROR_MESSAGES.MISSING_FIELDS);
   }
@@ -117,6 +118,7 @@ router.post('/api/user/sign', async (req: Request, res: Response, next: NextFunc
 
 //ANCHOR - 로그인
 router.post('/api/user/login', async (req: Request, res: Response, next: NextFunction) => {
+  console.log(req.body);
   if (!req.body.username || !req.body.password) {
     throw new CustomError(HTTP_STATUS.BAD_REQUEST, 'MISSING_FIELDS', ERROR_MESSAGES.MISSING_FIELDS);
   }

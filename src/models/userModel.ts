@@ -46,7 +46,7 @@ export class UserModel {
     try {
       const userRepository = AppDataSource.getRepository(UserEntity);
 
-      const user = await userRepository.findOneBy({ username, password });
+      const user = await userRepository.findOneBy({ username });
       if (!user) {
         throw new CustomError(
           HTTP_STATUS.UNAUTHORIZED,
