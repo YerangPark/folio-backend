@@ -20,6 +20,9 @@ app.use(cors({
   credentials: true // 쿠키 사용을 허용할 경우 true
 }));
 
+// Preflight 요청 처리
+app.options('*', cors());
+
 app.use(express.json());
 app.use(userRoutes);
 app.use(portfolioRoutes);
