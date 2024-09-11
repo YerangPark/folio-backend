@@ -13,11 +13,10 @@ dotenv.config();
 const app = express();
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
 
-// CORS 설정
 app.use(cors({
-  origin: `http://yrpark.duckdns.org`, // 허용할 도메인
-  methods: ['GET', 'POST', 'UPDATE', 'DELETE', 'PATCH'], // 허용할 메서드
-  credentials: true // 쿠키 사용을 허용할 경우 true
+  origin: `http://yrpark.duckdns.org`,
+  methods: ['GET', 'POST', 'UPDATE', 'DELETE', 'PATCH'],
+  credentials: true
 }));
 
 // Preflight 요청 처리
@@ -27,6 +26,12 @@ app.use(express.json());
 app.use(userRoutes);
 app.use(portfolioRoutes);
 app.use(ErrorHandler);
+
+// For Logging
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
 
 //SECTION
 AppDataSource.initialize()
