@@ -11,11 +11,11 @@ import AppDataSource from '../ormconfig.js';
 dotenv.config();
 
 const app = express();
-const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
+const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
 
 // CORS 설정
 app.use(cors({
-  origin: 'http://localhost:8080', // 허용할 도메인
+  origin: `http://yrpark.duckdns.org`, // 허용할 도메인
   methods: ['GET', 'POST', 'UPDATE', 'DELETE', 'PATCH'], // 허용할 메서드
   credentials: true // 쿠키 사용을 허용할 경우 true
 }));
