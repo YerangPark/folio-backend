@@ -52,8 +52,21 @@ router.delete('/api/portfolio/:id', async (req: Request, res: Response, next: Ne
 });
 
 // 특정 유저의 모든 포트폴리오 조회
-router.get('/api/portfolios/user/:user_id', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/api/portfolios', async (req: Request, res: Response, next: NextFunction) => {
   try {
+    console.log(req.body);
+    const { id } = req.body;
+    const portfolios = await PortfolioService.getPortfoliosByUserId(parseInt(id, 10));
+    res.status(HTTP_STATUS.OK).json(generateSuccessResponse(portfolios));
+  } catch (error: any) {
+    next(error);
+  }
+});
+
+// 특정 유저의 모든 포트폴리오 조회
+router.get('/api/portfolios/brief', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    console.log('come');
     const { user_id } = req.params;
     const portfolios = await PortfolioService.getPortfoliosByUserId(parseInt(user_id, 10));
     res.status(HTTP_STATUS.OK).json(generateSuccessResponse(portfolios));
@@ -61,5 +74,6 @@ router.get('/api/portfolios/user/:user_id', async (req: Request, res: Response, 
     next(error);
   }
 });
+
 
 export default router;

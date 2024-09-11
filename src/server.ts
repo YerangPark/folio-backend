@@ -27,12 +27,6 @@ app.use(userRoutes);
 app.use(portfolioRoutes);
 app.use(ErrorHandler);
 
-// For Logging
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
-  next();
-});
-
 //SECTION
 AppDataSource.initialize()
 .then(() => {
