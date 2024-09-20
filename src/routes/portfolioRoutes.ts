@@ -66,10 +66,19 @@ router.get('/api/portfolios', async (req: Request, res: Response, next: NextFunc
 // 특정 유저의 모든 포트폴리오 조회
 router.get('/api/portfolios/brief', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    console.log('come');
-    const { user_id } = req.params;
-    const portfolios = await PortfolioService.getPortfoliosByUserId(parseInt(user_id, 10));
-    res.status(HTTP_STATUS.OK).json(generateSuccessResponse(portfolios));
+    // JWT 미들웨어에서 req.user에 유저 정보가 저장되었으므로 여기서 사용
+    if (typeof req.user !== 'string' && req.user?.id) {
+      const userId = req.user.id;  // user가 JwtPayload 타입일 때만 id에 접근
+
+      // 포트폴리오 조회 서비스 호출
+      const portfolios = await PortfolioService.getPortfoliosByUserId(userId);
+
+      // 성공 응답
+      res.status(HTTP_STATUS.OK).json(generateSuccessResponse(portfolios));
+    } else {
+      // 인증되지 않았거나 잘못된 토큰
+      return res.status(403).json({ message: 'Access denied' });
+    }
   } catch (error: any) {
     next(error);
   }

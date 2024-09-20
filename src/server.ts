@@ -14,7 +14,7 @@ const app = express();
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
 
 app.use(cors({
-  origin: `http://yrpark.duckdns.org`,
+  origin: process.env.CORS_ORIGIN,
   methods: ['GET', 'POST', 'UPDATE', 'DELETE', 'PATCH'],
   credentials: true
 }));

@@ -1,4 +1,5 @@
 import express, { Router, Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
 import UserModel from '../models/userModel.js';
 import { sendEmail } from '../utils/mailer.js';
 import { generateRandomPassword } from '../utils/passwordGenerator.js';
@@ -9,6 +10,11 @@ import CustomError from '../errors/customError.js';
 import { generateSuccessResponse } from '../responses/successResponse.js';
 
 const router = express.Router();
+const SECRET_KEY = process.env.SECRET_KEY;
+
+if (!SECRET_KEY) {
+  throw new Error('SECRET_KEY is not defined');
+}
 
 //SECTION - 타입 정의
 interface SignupRequestBody {
@@ -126,7 +132,10 @@ router.post('/api/user/login', async (req: Request, res: Response, next: NextFun
   try {
     const result = await UserModel.authenticateUser(username, password);
     const { id } = result;
-    res.status(HTTP_STATUS.OK).json(generateSuccessResponse({ id }));
+
+    const token = jwt.sign({ id: id, username: username }, SECRET_KEY, { expiresIn: '1h' });
+
+    res.status(HTTP_STATUS.OK).json(generateSuccessResponse({ token }));
   } catch (error: any) {
     next(error);
   }
