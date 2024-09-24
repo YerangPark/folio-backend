@@ -20,6 +20,9 @@ export class PortfolioEntity {
   @Column({ type: "text" })
   description!: string;
 
+  @Column({ type: "varchar", length: 255, nullable: true })
+  image!: string;
+
   @Column({ type: "varchar", length: 500, nullable: true })
   github_link!: string;
 

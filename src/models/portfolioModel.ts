@@ -9,9 +9,14 @@ import { DeepPartial } from 'typeorm';
 
 export class PortfolioModel {
   // 파일명으로 포트폴리오 찾기
-  static async findPortfolioByFileName(fileName: string): Promise<PortfolioEntity | null> {
-    const portfolioRepository = AppDataSource.getRepository(PortfolioEntity);
-    return await portfolioRepository.findOne({ where: { file_name: fileName } });
+  static async findPortfolioByFileNameAndUserId(fileName: string, userId: number): Promise<PortfolioEntity | null> {
+    return await AppDataSource.getRepository(PortfolioEntity)
+      .findOne({
+        where: {
+          file_name: fileName,
+          user: { id: userId }
+        }
+      })
   }
 
   // 포트폴리오 생성

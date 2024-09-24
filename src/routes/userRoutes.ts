@@ -8,6 +8,7 @@ import { ERROR_MESSAGES } from '../constants/errorConst.js';
 import { HTTP_STATUS } from '../constants/httpStatus.js';
 import CustomError from '../errors/customError.js';
 import { generateSuccessResponse } from '../responses/successResponse.js';
+import authenticateJWT from '../utils/athenticateJWT.js';
 
 const router = express.Router();
 const SECRET_KEY = process.env.SECRET_KEY;
@@ -136,6 +137,20 @@ router.post('/api/user/login', async (req: Request, res: Response, next: NextFun
     const token = jwt.sign({ id: id, username: username }, SECRET_KEY, { expiresIn: '1h' });
 
     res.status(HTTP_STATUS.OK).json(generateSuccessResponse({ token }));
+  } catch (error: any) {
+    next(error);
+  }
+});
+
+//ANCHOR - 로그아웃
+router.post('/api/user/logout', authenticateJWT, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (token) {
+      res.status(HTTP_STATUS.OK).json({ message: 'Logged out successfully' });
+    } else {
+      res.status(HTTP_STATUS.BAD_REQUEST).json({ message: 'No token provided' });
+    }
   } catch (error: any) {
     next(error);
   }

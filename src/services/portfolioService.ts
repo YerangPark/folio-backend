@@ -49,7 +49,7 @@ class PortfolioService {
     await queryRunner.startTransaction();
 
     try {
-      const existingPortfolio = await PortfolioModel.findPortfolioByFileName(portfolioData.file_name);
+      const existingPortfolio = await PortfolioModel.findPortfolioByFileNameAndUserId(portfolioData.file_name, portfolioData.user_id);
       if (existingPortfolio) {
         throw new CustomError(HTTP_STATUS.BAD_REQUEST, 'FILENAME_TAKEN', ERROR_MESSAGES.FILENAME_TAKEN);
       }
