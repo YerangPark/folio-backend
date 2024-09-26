@@ -7,6 +7,7 @@ import userRoutes from './routes/userRoutes.js';
 import portfolioRoutes from './routes/portfolioRoutes.js';
 import ErrorHandler from './middlewares/errorHandler.js';
 import AppDataSource from '../ormconfig.js';
+import skillRoutes from './routes/skillRoutes.js';
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.options('*', cors());
 
 app.use(express.json());
 app.use(userRoutes);
+app.use(skillRoutes);
 app.use(portfolioRoutes);
 app.use(ErrorHandler);
 

@@ -15,7 +15,10 @@ const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
 
     jwt.verify(token, SECRET_KEY, (err, user) => {
       if (err) {
-        return res.status(403).json({ message: 'Forbidden' });
+        if (err.name === 'TokenExpiredError') {
+          return res.status(401).json({ message: '토큰이 만료되었습니다.' });
+        }
+        return res.status(403).json({ message: '유효하지 않은 토큰입니다.' });
       }
 
       // 토큰이 유효하다면 요청 객체에 유저 정보를 저장
