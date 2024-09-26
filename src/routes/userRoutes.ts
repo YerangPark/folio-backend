@@ -8,6 +8,7 @@ import { ERROR_MESSAGES } from '../constants/errorConst.js';
 import { HTTP_STATUS } from '../constants/httpStatus.js';
 import CustomError from '../errors/customError.js';
 import { generateSuccessResponse } from '../responses/successResponse.js';
+import bcrypt from 'bcryptjs';
 import authenticateJWT from '../utils/athenticateJWT.js';
 
 const router = express.Router();
@@ -226,13 +227,14 @@ router.post('/api/user/find-pw', async (req: Request, res: Response, next: NextF
   try {
     const user = await UserModel.findPWByUsernameAndEmail(username, email);
     const updatedData: Partial<EditRequestBody> = {};
-    updatedData.password = generateRandomPassword(USER_CONST.TEMP_PW_LENGTH);
+    const randomPassword = generateRandomPassword(USER_CONST.TEMP_PW_LENGTH);
+    updatedData.password = await bcrypt.hash(randomPassword, 10);
 
     await UserModel.updateUser(username, updatedData);
 
     await sendEmail({
       to: email,
-      password: updatedData.password,
+      password: randomPassword,
       type: EMAIL_TYPE.FIND_PW
     });
 
