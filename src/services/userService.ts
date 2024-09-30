@@ -16,7 +16,7 @@ interface User {
 }
 type UserWithoutPassword = Omit<User, 'password'>;
 
-export class UserModel {
+export class UserService {
   //ANCHOR - 사용자 생성 (가입)
   static async createUser(user: User): Promise<UserWithoutPassword> {
     try {
@@ -98,11 +98,11 @@ export class UserModel {
   }
 
   //ANCHOR - 사용자 조회 (username 기준)
-  static async findByUsername(username: string): Promise<boolean> {
+  static async findByUserid(id: number): Promise<boolean> {
     try {
       const userRepository = AppDataSource.getRepository(UserEntity);
 
-      const count = await userRepository.count({ where: { username } });
+      const count = await userRepository.count({ where: { id } });
       if (count === 0) {
         throw new CustomError(
           HTTP_STATUS.BAD_REQUEST,
@@ -122,11 +122,33 @@ export class UserModel {
   }
 
   //ANCHOR - 사용자 정보 업데이트
-  static async updateUser(username: string, updatedData: Partial<User>): Promise<boolean> {
+  static async updateUserByUsername(username: string, updatedData: Partial<User>): Promise<boolean> {
     try {
       const userRepository = AppDataSource.getRepository(UserEntity);
 
       const result = await userRepository.update({ username }, updatedData);
+      if (result.affected && result.affected > 0) {
+        return true;
+      } else {
+        throw new CustomError(
+          HTTP_STATUS.BAD_REQUEST,
+          'USER_NOT_FOUND',
+          ERROR_MESSAGES.USER_NOT_FOUND
+        );
+      }
+    } catch (dbError: any) {
+      if (dbError instanceof CustomError) {
+        throw dbError;
+      } else {
+        throw new DBCustomError(dbError);
+      }
+    }
+  }
+  static async updateUserById(id: number, updatedData: Partial<User>): Promise<boolean> {
+    try {
+      const userRepository = AppDataSource.getRepository(UserEntity);
+
+      const result = await userRepository.update({ id }, updatedData);
       if (result.affected && result.affected > 0) {
         return true;
       } else {
@@ -194,13 +216,13 @@ export class UserModel {
   }
 
   //ANCHOR - 사용자 정보 조회 (username 기준)
-  static async getInfoByUsername(username: string): Promise<UserWithoutPassword> {
+  static async getInfoByUserid(id: number): Promise<UserWithoutPassword> {
     try {
       const userRepository = AppDataSource.getRepository(UserEntity);
 
       const user = await userRepository.findOne({
-        where: { username },
-        select: ["name", "birthdate", "email"],
+        where: { id },
+        select: ["name", "birthdate", "email", "username"],
       });
       if (!user) {
         throw new CustomError(
@@ -260,4 +282,4 @@ export class UserModel {
   }
 }
 
-export default UserModel;
+export default UserService;

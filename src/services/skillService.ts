@@ -7,7 +7,7 @@ import DBCustomError from '../errors/dbCustomError.js';
 import bcrypt from 'bcryptjs';
 import { SkillEntity } from '../entities/skillEntity.js';
 
-export class SkillModel {
+export class SkillService {
   //ANCHOR - 스킬 리스트
   static async getSkills(): Promise<SkillEntity[]> {
     try {
@@ -25,4 +25,4 @@ export class SkillModel {
   }
 }
 
-export default SkillModel;
+export default SkillService;

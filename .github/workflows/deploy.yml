@@ -70,6 +70,7 @@ jobs:
             -e DB_PASS=${{ secrets.DB_PASS }} \
             -e DB_NAME=${{ secrets.DB_NAME }} \
             -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
+            -e UPLOAD_PATH=/home/deploy/upload \
             -e CORS_ORIGIN=http://yrpark.duckdns.org \
             -p 8080:3001 ${{ secrets.DOCKERHUB_USERNAME }}/folio-backend:latest
 

@@ -20,14 +20,19 @@ app.use(cors({
   credentials: true
 }));
 
-// Preflight 요청 처리
-app.options('*', cors());
+app.options('*', cors()); // ANCHOR: Preflight 요청 처리
+
+// NOTE: JSON 요청 본문 크기 제한을 10MB로 설정
+app.use(express.json({ limit: '10mb' }));
+// NOTE: URL-encoded 데이터에 대한 제한 설정
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 app.use(express.json());
 app.use(userRoutes);
 app.use(skillRoutes);
 app.use(portfolioRoutes);
 app.use(ErrorHandler);
+
 
 //SECTION
 AppDataSource.initialize()

@@ -4,25 +4,45 @@ import PortfolioService from '../services/portfolioService.js';
 import { generateSuccessResponse } from '../responses/successResponse.js';
 import { HTTP_STATUS } from '../constants/httpStatus.js';
 import authenticateJWT from '../utils/athenticateJWT.js';
+import upload from '../utils/multer.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const router = express.Router();
 
 // 포트폴리오 생성
-router.post('/api/portfolio', authenticateJWT, async (req: Request, res: Response, next: NextFunction) => {
+router.post('/api/portfolio', authenticateJWT, upload.any(), async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // TODO : JWT 토큰에서 유저id 정보 가져와서 같이 넘겨줘야 함.
     if (typeof req.user !== 'string' && req.user?.id) {
       const userId = req.user.id;  // user가 JwtPayload 타입일 때만 id에 접근
       const portfolioData = req.body;
 
-      if (portfolioData.user_id !== userId) { // NOTE : 인가되지 않은 유저에 대한 접근 제한
-        return res.status(403).json({ message: 'Access denied1' });
+      // req.files가 Multer로 전달된 파일인지 확인하는 타입 가드
+      if (req.files && Array.isArray(req.files)) {
+        const files = req.files as Express.Multer.File[];
+
+        // 포트폴리오 대표 이미지
+        const portfolioImage = files.find(file => file.fieldname === 'image');
+        portfolioData.image = portfolioImage ? `${process.env.UPLOAD_PATH}/${portfolioImage.filename}` : null;
+
+        // 프로젝트별 이미지 및 README 파일 처리
+        portfolioData.projects = portfolioData.projects.map((project: any, index: number) => {
+          const projectImage = files.find(file => file.fieldname === `projects[${index}][image]`);
+          const readmeFile = files.find(file => file.fieldname === `projects[${index}][readme_file]`);
+
+          return {
+            ...project,
+            image: projectImage ? `${process.env.UPLOAD_PATH}/${projectImage.filename}` : null,
+            readme_file: readmeFile ? `${process.env.UPLOAD_PATH}/${readmeFile.filename}` : null
+          };
+        });
       }
 
-      const newPortfolio = await PortfolioService.createPortfolio(portfolioData);
+      const newPortfolio = await PortfolioService.createPortfolio(userId, portfolioData);
       res.status(HTTP_STATUS.CREATED).json(generateSuccessResponse(newPortfolio));
     } else {
-      return res.status(403).json({ message: 'Access denied2' });
+      return res.status(403).json({ message: 'Access denied' });
     }
   } catch (error: any) {
     next(error);
