@@ -8,6 +8,7 @@ import portfolioRoutes from './routes/portfolioRoutes.js';
 import ErrorHandler from './middlewares/errorHandler.js';
 import AppDataSource from '../ormconfig.js';
 import skillRoutes from './routes/skillRoutes.js';
+import path from 'path';
 
 dotenv.config();
 
@@ -26,13 +27,12 @@ app.options('*', cors()); // ANCHOR: Preflight 요청 처리
 app.use(express.json({ limit: '10mb' }));
 // NOTE: URL-encoded 데이터에 대한 제한 설정
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
-
+app.use('/uploads', express.static(`${process.env.UPLOAD_PATH}`));
 app.use(express.json());
 app.use(userRoutes);
 app.use(skillRoutes);
 app.use(portfolioRoutes);
 app.use(ErrorHandler);
-
 
 //SECTION
 AppDataSource.initialize()
