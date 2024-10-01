@@ -61,11 +61,35 @@ router.get('/api/portfolio/:id', authenticateJWT, async (req: Request, res: Resp
 });
 
 // 포트폴리오 수정
-router.patch('/api/portfolio/:id', authenticateJWT, async (req: Request, res: Response, next: NextFunction) => {
+router.patch('/api/portfolio/:id', authenticateJWT, upload.any(), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    const updatedData = req.body;
-    const updatedPortfolio = await PortfolioService.updatePortfolio(parseInt(id, 10), updatedData);
+    const portfolioData = req.body;
+
+    // req.files가 Multer로 전달된 파일인지 확인하는 타입 가드
+    if (req.files && Array.isArray(req.files)) {
+      const files = req.files as Express.Multer.File[];
+
+      // 포트폴리오 대표 이미지
+      const portfolioImage = files.find(file => file.fieldname === 'image');
+      portfolioData.image = portfolioImage ? `${process.env.UPLOAD_PATH}/${portfolioImage.filename}` : null;
+
+      // 프로젝트별 이미지 및 README 파일 처리
+      portfolioData.projects = portfolioData.projects.map((project: any, index: number) => {
+        const projectImage = files.find(file => file.fieldname === `projects[${index}][image]`);
+        const readmeFile = files.find(file => file.fieldname === `projects[${index}][readme_file]`);
+
+        return {
+          ...project,
+          image: projectImage ? `${process.env.UPLOAD_PATH}/${projectImage.filename}` : project.image,  // 새 이미지가 있으면 교체
+          readme_file: readmeFile ? `${process.env.UPLOAD_PATH}/${readmeFile.filename}` : project.readme_file  // 새 README 파일이 있으면 교체
+        };
+      });
+    }
+
+    // 수정된 포트폴리오 데이터를 저장
+    const updatedPortfolio = await PortfolioService.updatePortfolio(parseInt(id, 10), portfolioData);
+
     res.status(HTTP_STATUS.OK).json(generateSuccessResponse(updatedPortfolio));
   } catch (error: any) {
     next(error);
