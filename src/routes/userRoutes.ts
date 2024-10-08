@@ -9,10 +9,7 @@ import { HTTP_STATUS } from '../constants/httpStatus.js';
 import CustomError from '../errors/customError.js';
 import { generateSuccessResponse } from '../responses/successResponse.js';
 import bcrypt from 'bcryptjs';
-<<<<<<< HEAD
-=======
 import authenticateJWT from '../utils/athenticateJWT.js';
->>>>>>> feat/portfolio-route
 
 const router = express.Router();
 const SECRET_KEY = process.env.SECRET_KEY;
