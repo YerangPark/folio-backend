@@ -28,4 +28,7 @@ export class UserEntity {
 
   @OneToMany(() => PortfolioEntity, (portfolio) => portfolio.user)
   portfolios!: PortfolioEntity[];
+  // @OneToMany(() => forwardRef(() => PortfolioEntity), (portfolio) => portfolio.user)
+  // portfolios!: PortfolioEntity[];
+
 }

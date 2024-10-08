@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from "typeorm";
 import { PortfolioEntity } from "./portfolioEntity.js";
 import { ProjectSkillEntity } from "./projectSkillEntity.js";
 
@@ -7,7 +7,12 @@ export class ProjectEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
+  // 외래 키 컬럼을 명시적으로 추가
+  @Column()
+  portfolio_id!: number; // 외래 키로서 portfolio_id를 명시적으로 선언
+
   @ManyToOne(() => PortfolioEntity, portfolio => portfolio.projects, { onDelete: 'CASCADE', lazy: true })
+  @JoinColumn({ name: 'portfolio_id' }) // 외래 키를 매핑할 JoinColumn 명시
   portfolio!: Promise<PortfolioEntity>;
 
   @Column({ type: "varchar", length: 150 })

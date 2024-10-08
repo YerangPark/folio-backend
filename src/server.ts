@@ -7,6 +7,8 @@ import userRoutes from './routes/userRoutes.js';
 import portfolioRoutes from './routes/portfolioRoutes.js';
 import ErrorHandler from './middlewares/errorHandler.js';
 import AppDataSource from '../ormconfig.js';
+import skillRoutes from './routes/skillRoutes.js';
+import path from 'path';
 
 dotenv.config();
 
@@ -14,24 +16,23 @@ const app = express();
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
 
 app.use(cors({
-  origin: `http://yrpark.duckdns.org`,
+  origin: process.env.CORS_ORIGIN,
   methods: ['GET', 'POST', 'UPDATE', 'DELETE', 'PATCH'],
   credentials: true
 }));
 
-// Preflight 요청 처리
-app.options('*', cors());
+app.options('*', cors()); // ANCHOR: Preflight 요청 처리
 
+// NOTE: JSON 요청 본문 크기 제한을 10MB로 설정
+app.use(express.json({ limit: '10mb' }));
+// NOTE: URL-encoded 데이터에 대한 제한 설정
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+app.use('/uploads', express.static(`${process.env.UPLOAD_PATH}`));
 app.use(express.json());
 app.use(userRoutes);
+app.use(skillRoutes);
 app.use(portfolioRoutes);
 app.use(ErrorHandler);
-
-// For Logging
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
-  next();
-});
 
 //SECTION
 AppDataSource.initialize()
