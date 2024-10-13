@@ -215,7 +215,7 @@ export class UserService {
     }
   }
 
-  //ANCHOR - 사용자 정보 조회 (username 기준)
+  //ANCHOR - 사용자 정보 조회 (userid 기준)
   static async getInfoByUserid(id: number): Promise<UserWithoutPassword> {
     try {
       const userRepository = AppDataSource.getRepository(UserEntity);
@@ -272,6 +272,40 @@ export class UserService {
 
       const count = await userRepository.count({ where: { email } });
       return count > 0;
+    } catch (dbError: any) {
+      if (dbError instanceof CustomError) {
+        throw dbError;
+      } else {
+        throw new DBCustomError(dbError);
+      }
+    }
+  }
+
+  //ANCHOR - 사용자 정보 조회 (username 기준)
+  static async getInfoByUsername(username: string): Promise<UserWithoutPassword> {
+    try {
+      const userRepository = AppDataSource.getRepository(UserEntity);
+
+      const user = await userRepository.findOne({
+        where: { username },
+        select: ["name", "birthdate", "email"],
+      });
+      if (!user) {
+        throw new CustomError(
+          HTTP_STATUS.BAD_REQUEST,
+          'USER_NOT_FOUND',
+          ERROR_MESSAGES.USER_NOT_FOUND
+        );
+      }
+
+      const birthdate = new Date(user.birthdate);
+
+      return {
+        name: user.name,
+        birthdate: birthdate.toISOString().split('T')[0],
+        email: user.email,
+        username: username,
+      };
     } catch (dbError: any) {
       if (dbError instanceof CustomError) {
         throw dbError;
