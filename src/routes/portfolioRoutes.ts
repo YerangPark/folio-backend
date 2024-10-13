@@ -143,5 +143,15 @@ router.get('/api/portfolios/brief', authenticateJWT, async (req: Request, res: R
   }
 });
 
+// 포트폴리오 public 조회 (username, portfolioId 기준)
+router.get('/api/:username/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { username, id } = req.params;
+    const portfolio = await PortfolioService.getPublicPortfolioByUsernameAndId(username, parseInt(id, 10));
+    res.status(HTTP_STATUS.OK).json(generateSuccessResponse(portfolio));
+  } catch (error: any) {
+    next(error);
+  }
+});
 
 export default router;

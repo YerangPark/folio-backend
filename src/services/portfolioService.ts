@@ -64,6 +64,7 @@ class PortfolioService {
   static skillRepository: Repository<SkillEntity> = AppDataSource.getRepository(SkillEntity);
   static portfolioSkillRepository: Repository<PortfolioSkillEntity> = AppDataSource.getRepository(PortfolioSkillEntity);
   static projectSkillRepository: Repository<ProjectSkillEntity> = AppDataSource.getRepository(ProjectSkillEntity)
+  static userRepository: Repository<UserEntity> = AppDataSource.getRepository(UserEntity);
 
   // 포트폴리오 생성
   static async createPortfolio(userId: number, portfolioData: Portfolio): Promise<PortfolioEntity> {
@@ -360,6 +361,49 @@ class PortfolioService {
     })
     return portfolios;
   }
+
+  static async getPublicPortfolioByUsernameAndId(username: string, id: number): Promise<PortfolioEntity | null> {
+    // username을 통해 사용자 조회
+    const user = await this.userRepository.findOne({
+      where: { username },  // username으로 사용자 조회
+    });
+
+    if (!user) {
+      throw new CustomError(HTTP_STATUS.NOT_FOUND, 'USER_NOT_FOUND', 'User not found.');
+    }
+
+    const portfolio = await this.portfolioRepository.findOne({
+      where: {
+        id,
+        user: { id: user.id },  // 사용자 ID로 필터링
+      },
+      relations: ['projects', 'portfolioSkills', 'projects.projectSkills', 'projects.projectSkills.skill'],
+    });
+
+    if (!portfolio) {
+      throw new CustomError(HTTP_STATUS.NOT_FOUND, 'PORTFOLIO_NOT_FOUND', 'Portfolio not found.');
+    }
+
+    if (portfolio.image) {
+      portfolio.image = portfolio.image.split('/').pop() || portfolio.image;
+    }
+
+    const projects = await Promise.all(
+      (await portfolio.projects).map(async project => {
+        if (project.image) {
+          project.image = project.image.split('/').pop() || project.image;
+        }
+        if (project.readme_file) {
+          project.readme_file = project.readme_file.split('/').pop() || project.readme_file;
+        }
+        return project;
+      })
+    );
+    portfolio.projects = Promise.resolve(projects);
+
+    return portfolio;
+  }
+
 }
 
 export default PortfolioService;

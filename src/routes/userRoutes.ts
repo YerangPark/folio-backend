@@ -325,5 +325,17 @@ router.get('/api/user/check-email', async (req: Request, res: Response, next: Ne
   }
 });
 
+//ANCHOR - 사용자 public 정보 조회
+router.get('/api/user/public/:username', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { username } = req.params;
+    const result = await UserService.getInfoByUsername(username);
+    const { email, name, birthdate } = result;
+    res.status(HTTP_STATUS.OK).json(generateSuccessResponse({ email, name, birthdate }));
+  } catch (error: any) {
+    next(error);
+  }
+});
+
 export default router;
 
