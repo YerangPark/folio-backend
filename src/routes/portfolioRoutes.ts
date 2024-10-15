@@ -75,14 +75,14 @@ router.patch('/api/portfolio/:id', authenticateJWT, upload.any(), async (req: Re
       portfolioData.image = portfolioImage ? `${process.env.UPLOAD_PATH}/${portfolioImage.filename}` : null;
 
       // 프로젝트별 이미지 및 README 파일 처리
-      portfolioData.projects = portfolioData.projects.map((project: any, index: number) => {
+        portfolioData.projects = portfolioData.projects.map((project: any, index: number) => {
         const projectImage = files.find(file => file.fieldname === `projects[${index}][image]`);
         const readmeFile = files.find(file => file.fieldname === `projects[${index}][readme_file]`);
 
         return {
           ...project,
-          image: projectImage ? `${process.env.UPLOAD_PATH}/${projectImage.filename}` : project.image,  // 새 이미지가 있으면 교체
-          readme_file: readmeFile ? `${process.env.UPLOAD_PATH}/${readmeFile.filename}` : project.readme_file  // 새 README 파일이 있으면 교체
+          image: projectImage ? `${process.env.UPLOAD_PATH}/${projectImage.filename}` : null,
+          readme_file: readmeFile ? `${process.env.UPLOAD_PATH}/${readmeFile.filename}` : null
         };
       });
     }

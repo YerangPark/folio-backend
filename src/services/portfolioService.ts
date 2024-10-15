@@ -261,6 +261,7 @@ class PortfolioService {
                   existingProject.github_link = project.github_link as string;
                   existingProject.site_link = project.site_link as string;
                   existingProject.description = project.description;
+                  existingProject.readme_file = project.readme_file as string;
 
                   // 프로젝트 저장 (업데이트)
                   await queryRunner.manager.save(existingProject);
@@ -294,6 +295,7 @@ class PortfolioService {
                   newProject.site_link = project.site_link as string;
                   newProject.description = project.description;
                   newProject.portfolio = Promise.resolve(existingPortfolio);
+                  newProject.readme_file = project.readme_file as string;
 
                   await queryRunner.manager.save(newProject);
 
