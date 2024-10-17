@@ -245,89 +245,114 @@ class PortfolioService {
           }
       }
 
-        // 프로젝트 업데이트
-        if (updatedData.projects) {
-          const existingProjects = await queryRunner.manager.find(ProjectEntity, { where: { portfolio: { id } }, relations: ['projectSkills'] });
+      // 프로젝트 업데이트
+      if (updatedData.projects) {
+        const existingProjects = await queryRunner.manager.find(ProjectEntity, {
+            where: { portfolio: { id } },
+            relations: ['projectSkills'],
+        });
 
-          for (const project of updatedData.projects) {
-              const existingProject = existingProjects.find(p => p.id === project.id);
+        // 기존 프로젝트를 처리
+        for (const existingProject of existingProjects) {
+            const projectExists = updatedData.projects.some(
+                (p) => typeof p.id === 'string' ? parseInt(p.id, 10) === existingProject.id : p.id === existingProject.id
+            );
 
-              if (existingProject) {
-                  // 기존 프로젝트가 있으면 업데이트
-                  existingProject.name = project.name;
-                  existingProject.image = project.image as string;
-                  existingProject.start_date = project.start_date;
-                  existingProject.end_date = project.end_date;
-                  existingProject.github_link = project.github_link as string;
-                  existingProject.site_link = project.site_link as string;
-                  existingProject.description = project.description;
-                  existingProject.readme_file = project.readme_file as string;
+            if (!projectExists) {
+                // updatedData.projects에 없는 기존 프로젝트를 삭제
+                await queryRunner.manager.delete(ProjectEntity, { id: existingProject.id });
+            }
+        }
 
-                  // 프로젝트 저장 (업데이트)
-                  await queryRunner.manager.save(existingProject);
+        // 업데이트된 프로젝트를 처리
+        for (const project of updatedData.projects) {
+          const projectId = typeof project.id === 'string' ? parseInt(project.id, 10) : project.id;
+          const existingProject = existingProjects.find(p => p.id === projectId);
 
-                  // 프로젝트에 연결된 스킬 업데이트
-                  if (project.skills) {
-                      const projectSkillsArray = typeof project.skills === 'string' ? JSON.parse(project.skills) : project.skills;
-                      // 기존 프로젝트 스킬을 삭제 후 다시 추가
-                      await queryRunner.manager.delete(ProjectSkillEntity, { project: { id: existingProject.id } });
+          if (existingProject) {
+              // 기존 프로젝트가 있으면 업데이트
+              existingProject.name = project.name;
+              existingProject.start_date = project.start_date;
+              existingProject.end_date = project.end_date;
+              existingProject.github_link = project.github_link as string;
+              existingProject.site_link = project.site_link as string;
+              existingProject.description = project.description;
 
-                      for (const skill of projectSkillsArray) {
-                          const skillEntity = await queryRunner.manager.findOne(SkillEntity, { where: { id: skill } });
-                          if (!skillEntity) {
-                              throw new CustomError(HTTP_STATUS.BAD_REQUEST, 'SKILL_NOT_FOUND', ERROR_MESSAGES.SKILL_NOT_FOUND);
-                          }
-
-                          const projectSkill = new ProjectSkillEntity();
-                          projectSkill.project = Promise.resolve(existingProject);
-                          projectSkill.skill = Promise.resolve(skillEntity);
-                          await queryRunner.manager.save(projectSkill);
-                      }
-                  }
-              } else {
-                  // 새로운 프로젝트 추가
-                  const newProject = new ProjectEntity();
-                  newProject.name = project.name;
-                  newProject.image = project.image as string;
-                  newProject.start_date = project.start_date;
-                  newProject.end_date = project.end_date;
-                  newProject.github_link = project.github_link as string;
-                  newProject.site_link = project.site_link as string;
-                  newProject.description = project.description;
-                  newProject.portfolio = Promise.resolve(existingPortfolio);
-                  newProject.readme_file = project.readme_file as string;
-
-                  await queryRunner.manager.save(newProject);
-
-                  // 새로운 프로젝트 스킬 추가
-                  if (project.skills) {
-                      const projectSkillsArray = typeof project.skills === 'string' ? JSON.parse(project.skills) : project.skills;
-                      for (const skill of projectSkillsArray) {
-                          const skillEntity = await queryRunner.manager.findOne(SkillEntity, { where: { id: skill } });
-                          if (!skillEntity) {
-                              throw new CustomError(HTTP_STATUS.BAD_REQUEST, 'SKILL_NOT_FOUND', ERROR_MESSAGES.SKILL_NOT_FOUND);
-                          }
-
-                          const projectSkill = new ProjectSkillEntity();
-                          projectSkill.project = Promise.resolve(newProject);
-                          projectSkill.skill = Promise.resolve(skillEntity);
-                          await queryRunner.manager.save(projectSkill);
-                      }
-                  }
+              if (project.image) {
+                  existingProject.image = project.image;
               }
-          }
 
-          // 기존 프로젝트 중 삭제된 프로젝트 처리
-          for (const existingProject of existingProjects) {
-              const projectExists = updatedData.projects.some(p => p.id === existingProject.id);
-              if (!projectExists) {
-                  await queryRunner.manager.delete(ProjectEntity, { id: existingProject.id });
+              if (project.readme_file) {
+                  existingProject.readme_file = project.readme_file;
+              }
+
+              // 프로젝트 저장 (업데이트)
+              await queryRunner.manager.save(existingProject);
+
+              // 프로젝트에 연결된 스킬 업데이트
+              if (project.skills) {
+                const projectSkillsArray = typeof project.skills === 'string' ? JSON.parse(project.skills) : project.skills;
+
+                // 기존 스킬을 조회하여 새롭게 추가할 스킬만 필터링
+                const existingProjectSkills = await queryRunner.manager.find(ProjectSkillEntity, {
+                  where: { project: { id: existingProject.id } },
+                  relations: ['skill'],
+                });
+
+                // 이미 존재하는 스킬 ID 추출
+                const existingSkillIds = existingProjectSkills.map((existingSkill) => existingSkill.skill_id);
+
+                // 새롭게 추가할 스킬 ID만 필터링
+                const newSkills = projectSkillsArray.filter((skillId: number) => !existingSkillIds.includes(skillId));
+
+                // 중복되지 않은 새로운 스킬만 추가
+                for (const skill of newSkills) {
+                  const skillEntity = await queryRunner.manager.findOne(SkillEntity, { where: { id: skill } });
+                  if (!skillEntity) {
+                    throw new CustomError(HTTP_STATUS.BAD_REQUEST, 'SKILL_NOT_FOUND', ERROR_MESSAGES.SKILL_NOT_FOUND);
+                  }
+
+                  const projectSkill = new ProjectSkillEntity();
+                  projectSkill.project = Promise.resolve(existingProject);
+                  projectSkill.skill = Promise.resolve(skillEntity);
+                  await queryRunner.manager.save(projectSkill);
+                }
+              }
+          } else {
+              // 새로운 프로젝트 추가
+              const newProject = new ProjectEntity();
+              newProject.name = project.name;
+              newProject.image = project.image as string;
+              newProject.start_date = project.start_date;
+              newProject.end_date = project.end_date;
+              newProject.github_link = project.github_link as string;
+              newProject.site_link = project.site_link as string;
+              newProject.description = project.description;
+              newProject.portfolio = Promise.resolve(existingPortfolio);
+              newProject.readme_file = project.readme_file as string;
+
+              await queryRunner.manager.save(newProject);
+
+              // 새로운 프로젝트 스킬 추가
+              if (project.skills) {
+                  const projectSkillsArray = typeof project.skills === 'string' ? JSON.parse(project.skills) : project.skills;
+                  for (const skill of projectSkillsArray) {
+                      const skillEntity = await queryRunner.manager.findOne(SkillEntity, { where: { id: skill } });
+                      if (!skillEntity) {
+                          throw new CustomError(HTTP_STATUS.BAD_REQUEST, 'SKILL_NOT_FOUND', ERROR_MESSAGES.SKILL_NOT_FOUND);
+                      }
+
+                      const projectSkill = new ProjectSkillEntity();
+                      projectSkill.project = Promise.resolve(newProject);
+                      projectSkill.skill = Promise.resolve(skillEntity);
+                      await queryRunner.manager.save(projectSkill);
+                  }
               }
           }
         }
-
-        await queryRunner.commitTransaction();
-        return existingPortfolio;
+      }
+      await queryRunner.commitTransaction();
+      return existingPortfolio;
     } catch (error) {
         await queryRunner.rollbackTransaction();
         throw error;
