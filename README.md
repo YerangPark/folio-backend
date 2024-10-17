@@ -66,12 +66,7 @@ JWT 토큰을 이용하였습니다. 비밀번호는 단방향 암호화로 구�
 npm install
 ```
 
-### Develpe Mode
-```
-npm run dev
-```
-
-### Production Mode
+### Build and Start
 ```
 npm run build
 npm run start
@@ -80,20 +75,16 @@ npm run start
 ## 📁 Project Structure
 
 ```
-📁 /src
-├── 📁 app
-├── 📁 components : 하단에서 설명.
-│   ├── 📁 atoms
-│   ├── 📁 molecules
-│   ├── 📁 organisms
-│   └── 📁 templates
-├── 📁 utils : 미들웨어
-├── 📁 styles : css등
-├── 📁 store : for redux
-└── 📁 types : for Typescript type 정의
+📦 /
+├── README.md
+├── 📁 node_modules
+└── 📁 src
+    ├── 📁 config
+    ├── 📁 services
+    ├── 📁 constants
+    ├── 📁 entities
+    ├── 📁 errors
+    ├── 📁 middleware
+    ├── 📁 services
+    └── 📁 utils
 ```
-컴포넌트 구조를 모듈화하려고 노력했습니다.
-- 📁 **atoms** : button, input, p를 감싸는 기본적 컴포넌트
-- 📁 **molecules**  : atoms에 속한 컴포넌트를 여러개 조합한 컴포넌트
-- 📁 **organisms** : molecules와 atoms를 혼합해서 만든 컴포넌트. ex) 회원가입 양식, 푸터
-- 📁 **templates** : 페이지 스켈레톤. 어디에 atoms, molecules, organisms 배치할 지를 결정
